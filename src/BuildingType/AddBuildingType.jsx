@@ -22,7 +22,6 @@ export default class AddBuildingType extends Component {
         });
     }
 
-
     render() {
 
         const formRef = React.createRef();

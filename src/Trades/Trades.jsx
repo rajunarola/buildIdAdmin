@@ -58,9 +58,9 @@ export default class Trades extends Component {
                         <div className="container-fluid">
                             <div className="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
                                 <h1 className="h3 mb-0 text-gray-800">Add Trades</h1>
-                                {/* <Link to="/trade-list" className="btn btn-orange-search">View Trades List</Link> */}
+                                <Link to="/trade-list" className="btn btn-orange-search">View Trades List</Link>
                             </div>
-                            {/* 
+
                             <div className="trade-form-wrap">
                                 <div className="row mt-5">
                                     <div className="col-lg-6">
@@ -83,7 +83,7 @@ export default class Trades extends Component {
                                         </div>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                         <Footer />
                     </div>

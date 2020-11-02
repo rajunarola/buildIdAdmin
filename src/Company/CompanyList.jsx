@@ -45,7 +45,7 @@ export default class CompanyList extends Component {
             key: "recordStatus"
         },
         {
-            title: "Industry",
+            title: "Industry Name",
             dataIndex: "industryName",
             key: "industryName",
             sorter: (a, b) => a.industryName.localeCompare(b.industryName),
@@ -54,11 +54,28 @@ export default class CompanyList extends Component {
             )
         },
         {
+            title: "Website",
+            dataIndex: "webSite",
+            key: "webSite",
+            render: (webSite) => (
+                <div>{webSite ? webSite : '-'}</div>
+            )
+
+        },
+        {
             title: "Phone Number",
             dataIndex: "phone",
             key: "phone",
             render: (phone) => (
                 <div>{phone ? phone : '-'}</div>
+            )
+        },
+        {
+            title: "Edit",
+            dataIndex: "edit",
+            key: "edit",
+            render: (text, record) => (
+                <td><button className="btn btn-primary" onClick={(e) => this.editCompany(record.id)}>Edit</button></td>
             )
         },
         {
@@ -70,6 +87,10 @@ export default class CompanyList extends Component {
             )
         }
     ]
+
+    editCompany = (id) => {
+        this.props.history.push(`/edit-company/${id}`)
+    }
 
     handlePageClick = page => {
         console.log('page => ', page);

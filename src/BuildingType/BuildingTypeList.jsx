@@ -37,6 +37,14 @@ export default class BuildingTypeList extends Component {
             key: "recordStatus"
         },
         {
+            title: "Edit",
+            dataIndex: "edit",
+            key: "edit",
+            render: (text, record) => (
+                <td><button className="btn btn-primary" onClick={(e) => this.editBuildingType(record.id)}>Edit</button></td>
+            )
+        },
+        {
             title: "Delete",
             dataIndex: "delete",
             key: "delete",
@@ -45,6 +53,10 @@ export default class BuildingTypeList extends Component {
             )
         }
     ]
+
+    editBuildingType(id) {
+        this.props.history.push(`/edit-building-type/${id}`)
+    }
 
     handlePageClick = page => {
         const pageno = page.selected + 1;
@@ -58,7 +70,7 @@ export default class BuildingTypeList extends Component {
                 description: 'There was an error while fetching Building Type!'
             });
         });
-    }
+    };
 
     deleteBuildingType(Id) {
         swal({

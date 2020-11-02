@@ -88,9 +88,9 @@ export default class AddManufactures extends Component {
                         <div className="container-fluid">
                             <div className="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
                                 <h1 className="h3 mb-0 text-gray-800">Add Manufacturer</h1>
-                                {/* <Link to="/manufacturers-list" className="btn btn-orange-search">View Manufacturers List</Link> */}
+                                <Link to="/manufacturers-list" className="btn btn-orange-search">View Manufacturers List</Link>
                             </div>
-                            {/* <div className="trade-form-wrap mt-5 mb-5">
+                            <div className="trade-form-wrap mt-5 mb-5">
                                 <div className="row">
                                     <div className="col-lg-6">
                                         <div className="bg-white p-5 form-border">
@@ -113,7 +113,7 @@ export default class AddManufactures extends Component {
                                         </div>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                         <Footer />
                     </div>

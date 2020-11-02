@@ -10,6 +10,14 @@ export function getAllItems(pageNumber) {
     });
 };
 
+export function getItemById(itemId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getitem/${itemId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+};
+
 export function getSearchedItems(pageNumber, searchString) {
     return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getitems/10/${pageNumber}/${searchString}`).then(response => {
         return response
@@ -35,7 +43,29 @@ export function deleteItem(recordId) {
 }
 
 export function getRecordStatusListForItems() {
-    return axios.delete(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getrecordstatuslistforitems`).then(response => {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getrecordstatuslistforitems`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
+export function getItemPicture(itemId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getitempictures/${itemId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
+
+export function saveItemPicture(data) {
+    return axios.post(`https://bimiscwebapi-test.azurewebsites.net/api/misc/saveitempicture`, data, {
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "multipart/form data"
+        }
+    }).then(response => {
         return response
     }).catch(error => {
         return error

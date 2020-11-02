@@ -39,6 +39,14 @@ export default class TradesList extends Component {
             render: (dateCreated) => moment(dateCreated).format('MM-DD-YYYY')
         },
         {
+            title: "Edit",
+            dataIndex: "edit",
+            key: "edit",
+            render: (text, record) => (
+                <td><button className="btn btn-primary" onClick={(e) => this.editTrade(record.id)}>Edit</button></td>
+            )
+        },
+        {
             title: "Delete",
             dataIndex: "delete",
             key: "delete",
@@ -47,6 +55,10 @@ export default class TradesList extends Component {
             )
         }
     ]
+
+    editTrade(id) {
+        this.props.history.push(`/edit-trade/${id}`)
+    }
 
     handlePageClick = page => {
         const pageno = page.selected + 1;

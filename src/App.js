@@ -25,6 +25,10 @@ import AddProjects from './Projects/AddProjects';
 import EditManufacturers from './Manufactures/EditManufacturers';
 import SaveCompanyAddress from './Company/SaveCompanyAddress';
 import CompanyAddressList from './Company/CompanyAddressList';
+import EdittTrades from './Trades/EdittTrades';
+import EditCompany from './Company/EditCompany';
+import EditItem from './Item/EditItem';
+import EditBuildingType from './BuildingType/EditBuildingType';
 class App extends React.Component {
 
     render() {
@@ -36,16 +40,20 @@ class App extends React.Component {
                         <Route path="/dashboard" exact component={Dashboard} />
                         <Route path="/register" exact component={Register} />
                         <Route path="/add-company" exact component={Company} />
+                        <Route path="/edit-company/:id" exact component={EditCompany} />
                         <Route path="/company-list" exact component={CompanyList} />
                         <Route path="/add-trade" exact component={Trades} />
+                        <Route path="/edit-trade/:id" exact component={EdittTrades} />
                         <Route path="/trade-list" exact component={TradesList} />
                         <Route path="/add-item" exact component={Item} />
+                        <Route path="/edit-item/:id" exact component={EditItem} />
                         <Route path="/item-list" exact component={ItemList} />
                         <Route path="/manufacturers-list" exact component={ManufacturesList} />
                         <Route path="/add-manufacturer" exact component={AddManufactures} />
                         <Route path="/edit-manufacturer/:id" exact component={EditManufacturers} />
                         <Route path="/add-building-type" exact component={AddBuildingType} />
                         <Route path="/building-type-list" exact component={BuildingTypeList} />
+                        <Route path="/edit-building-type/:id" exact component={EditBuildingType} />
                         <Route path="/add-roles" exact component={AddRoles} />
                         <Route path="/roles-list" exact component={RolesList} />
                         <Route path="/add-ticket" exact component={AddTickets} />

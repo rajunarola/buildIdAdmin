@@ -45,6 +45,14 @@ export default class ItemList extends Component {
             render: (dateCreated) => moment(dateCreated).format('MM-DD-YYYY')
         },
         {
+            title: "Edit",
+            dataIndex: "edit",
+            key: "edit",
+            render: (text, record) => (
+                <td><button className="btn btn-primary" onClick={(e) => this.editItem(record.id)}>Edit</button></td>
+            )
+        },
+        {
             title: "Delete",
             dataIndex: "delete",
             key: "delete",
@@ -53,6 +61,10 @@ export default class ItemList extends Component {
             )
         }
     ]
+
+    editItem(id) {
+        this.props.history.push(`/edit-item/${id}`)
+    }
 
     handlePageClick = page => {
         console.log('page => ', page);

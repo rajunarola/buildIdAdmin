@@ -77,7 +77,7 @@ export default class AddTickets extends Component {
                                 {/* <Link to="/ticket-list" className="btn btn-orange-search">View Ticket List</Link> */}
                             </div>
 
-                            {/* <div className="trade-form-wrap">
+                            <div className="trade-form-wrap">
                                 <div className="row mt-5">
                                     <div className="col-lg-6">
                                         <div className="bg-white p-5 form-border">
@@ -100,7 +100,7 @@ export default class AddTickets extends Component {
                                         </div>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                         <Footer />
                     </div>

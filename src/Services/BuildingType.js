@@ -10,6 +10,14 @@ export function getAllBuildingType(pageNumber) {
     });
 }
 
+export function getBuildTypeById(buildingId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/projects/getBuildingType/${buildingId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
 export function getSearchedBuildingType(pageNumber, searchString) {
     return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/projects/getBuildingTypes/10/${pageNumber}/${searchString}`).then(response => {
         return response
@@ -28,6 +36,14 @@ export function postBuildingType(data) {
 
 export function deleteBuildingType(recordId) {
     return axios.delete(`https://bimiscwebapi-test.azurewebsites.net/api/projects/deleteBuildingType/${recordId}/${userId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
+export function recordStatusForManufacturers() {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/projects/getrecordstatuslistforBuildingTypes`).then(response => {
         return response
     }).catch(error => {
         return error

@@ -10,6 +10,14 @@ export function getAllCompany(pageNumber) {
     });
 }
 
+export function getCompanyById(companyId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/companies/GetCompany/${companyId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
 export function getSearchedCompany(pageNumber, searchString) {
     return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/companies/getcompanies/10/${pageNumber}/${searchString}`).then(response => {
         return response

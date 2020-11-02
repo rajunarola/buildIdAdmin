@@ -10,6 +10,14 @@ export function getAllTrades(pageNumber) {
     });
 }
 
+export function getTradeById(tradeId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/gettrade/${tradeId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
 export function getSearchedTrades(pageNumber, searchString) {
     return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/gettrades/10/${pageNumber}/${searchString}`).then(response => {
         return response

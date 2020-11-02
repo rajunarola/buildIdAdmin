@@ -10,6 +10,14 @@ export function getAllManufacturers(pageNumber) {
     });
 }
 
+export function getManufacturersById(manufacturerId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getManufacturer/${manufacturerId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
 export function getSearchedManufacturers(pageNumber, searchString) {
     return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getmanufacturers/10/${pageNumber}/${searchString}`).then(response => {
         return response
