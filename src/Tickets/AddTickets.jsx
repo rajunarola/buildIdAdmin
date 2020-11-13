@@ -74,7 +74,7 @@ export default class AddTickets extends Component {
                         <div className="container-fluid">
                             <div className="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
                                 <h1 className="h3 mb-0 text-gray-800">Add Ticket</h1>
-                                {/* <Link to="/ticket-list" className="btn btn-orange-search">View Ticket List</Link> */}
+                                <Link to="/ticket-list" className="btn btn-orange-search">View Ticket List</Link>
                             </div>
 
                             <div className="trade-form-wrap">
@@ -93,8 +93,8 @@ export default class AddTickets extends Component {
                                                         <Input onChange={(event) => this.changeHandler(event)} />
                                                     </Form.Item>
                                                 </div>
-                                                <div className="text-left">
-                                                    <button type="submit" className="btn btn-blue-search">Submit</button>
+                                                <div className="mt-4">
+                                                    <button type="submit" className="btn btn-orange-search">Submit</button>
                                                 </div>
                                             </Form>
                                         </div>

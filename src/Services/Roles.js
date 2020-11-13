@@ -18,6 +18,14 @@ export function getSearchedRole(pageNumber, searchString) {
     });
 }
 
+export function getRoleByID(roleId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getRole/${roleId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
 export function postRole(data) {
     return axios.post(`https://bimiscwebapi-test.azurewebsites.net/api/misc/saveRole`, data).then(response => {
         return response
@@ -34,8 +42,8 @@ export function deleteRole(recordId) {
     });
 }
 
-export function getRecordStatusForCompanies() {
-    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/companies/getrecordstatuslistforcompanies`).then(response => {
+export function getRecordStatusForRoles() {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getrecordstatuslistforRoles`).then(response => {
         return response
     }).catch(error => {
         return error

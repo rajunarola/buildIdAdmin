@@ -71,10 +71,10 @@ export default class SaveCompanyAddress extends Component {
             </div>
             <div className="container-fluid">
               <div className="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
-                <h1 className="h3 mb-0 text-gray-800">Add Company</h1>
-                {/* <Link to="/company-address-list" className="btn btn-orange-search">View Company Address List</Link> */}
+                <h1 className="h3 mb-0 text-gray-800">Add Company Address List</h1>
+                <Link to="/company-address-list" className="btn btn-orange-search">View Company Address List</Link>
               </div>
-              {/* <div className="trade-form-wrap mt-5 mb-5">
+              <div className="trade-form-wrap mt-5 mb-5">
                 <div className="row">
                   <div className="col-lg-6">
                     <div className="bg-white p-5 form-border">
@@ -174,7 +174,7 @@ export default class SaveCompanyAddress extends Component {
                     </div>
                   </div>
                 </div>
-              </div> */}
+              </div>
             </div>
             <Footer />
           </div>

@@ -7,6 +7,7 @@ import { notification, Table } from 'antd';
 import { Link } from 'react-router-dom'
 import swal from 'sweetalert';
 import Pagination from 'react-paginate';
+import Loader from '../Loader/Loader';
 export default class ManufacturesList extends Component {
 
     state = {
@@ -14,14 +15,20 @@ export default class ManufacturesList extends Component {
         limit: 10,
         total: '',
         pageCount: '',
-        currentPage: ''
+        currentPage: '',
+        loading: false
+    }
+
+
+    componentDidMount() {
+        this.setState({ loading: true })
     }
 
     handlePageClick = page => {
         const pageno = page.selected + 1;
         getAllManufacturers(pageno).then(res => {
             console.log('res => ', res.data.data);
-            this.setState({ manuFacturerType: res.data.data, total: res.data.message });
+            this.setState({ manuFacturerType: res.data.data, total: res.data.message, loading: false });
             let pageCount = this.state.total / this.state.limit
             this.setState({ pageCount: pageCount, currentPage: pageno })
         }).catch(err => {
@@ -59,7 +66,7 @@ export default class ManufacturesList extends Component {
             dataIndex: "edit",
             key: "edit",
             render: (text, record) => (
-                <td><button className="btn btn-success" onClick={(e) => this.editManufacturer(record.id)}>Edit</button></td>
+                <td><button className="btn btn-primary" onClick={(e) => this.editManufacturer(record.id)}>Edit</button></td>
             )
         },
         {
@@ -132,61 +139,63 @@ export default class ManufacturesList extends Component {
 
         return (
             <div>
-                <div class="d-flex">
-                    <SideNav />
-                    <div id="content-wrapper" class="d-flex flex-column w-100 content-relative">
-                        <div class="content">
-                            <Header />
-                        </div>
-                        <div class="container-fluid">
-                            <div class="main-title-lg mb-5 d-flex justify-content-between">
-                                <h1 class="h3 text-gray-800">Manufacturer List</h1>
-                                <Link to="/add-manufacturer" class="btn btn-orange-search">Add Manufacturer</Link>
+                {this.state.loading ? <Loader /> :
+                    <div class="d-flex">
+                        <SideNav />
+                        <div id="content-wrapper" class="d-flex flex-column w-100 content-relative">
+                            <div class="content">
+                                <Header />
                             </div>
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold txt-orange">Manufacturers List </h6>
-
-                                    <div class="search-data position-relative">
-                                        <input type="text" onChange={(e) => this.getSearchStringData(e)} className="form-control" />
-                                        <button className="searchbtn"><i class="fas fa-search"></i></button>
-                                    </div>
+                            <div class="container-fluid">
+                                <div class="main-title-lg mb-5 d-flex justify-content-between">
+                                    <h1 class="h3 text-gray-800">Manufacturer List</h1>
+                                    <Link to="/add-manufacturer" class="btn btn-orange-search">Add Manufacturer</Link>
                                 </div>
-                                <Table class="table table-bordered" dataSource={manuFacturerType} columns={this.columns}
-                                // pagination={{
-                                //     current: this.state.currentPage,
-                                //     total: this.state.total
-                                // }}
-                                // onChange={handleTableChange}
-                                />
-                                <Pagination
-                                    initialPage={0}
-                                    previousLabel={"Previous"}
-                                    nextLabel={"Next"}
-                                    breakLabel={"..."}
-                                    breakClassName={"page-item"}
-                                    breakLinkClassName={"page-link"}
-                                    pageClassName={"page-item"}
-                                    previousClassName={"page-item"}
-                                    pageLinkClassName={"page-link"}
-                                    pageRangeDisplayed={5}
-                                    nextClassName={"page-item"}
-                                    previousLinkClassName={"page-link"}
-                                    nextLinkClassName={"page-link"}
-                                    // marginPagesDisplayed={this.state.pageCount}
-                                    pageRangeDisplayed={this.state.limit}
-                                    pageCount={this.state.pageCount}
-                                    pageRangeDisplayed={10}
-                                    onPageChange={this.handlePageClick}
-                                    containerClassName={"pagination"}
-                                    subContainerClassName={""}
-                                    activeClassName={"active"}
-                                />
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold txt-orange">Manufacturers List </h6>
+
+                                        <div class="search-data position-relative">
+                                            <input type="text" onChange={(e) => this.getSearchStringData(e)} className="form-control" />
+                                            <button className="searchbtn"><i class="fas fa-search"></i></button>
+                                        </div>
+                                    </div>
+                                    <Table class="table table-bordered" dataSource={manuFacturerType} columns={this.columns}
+                                    // pagination={{
+                                    //     current: this.state.currentPage,
+                                    //     total: this.state.total
+                                    // }}
+                                    // onChange={handleTableChange}
+                                    />
+                                    <Pagination
+                                        initialPage={0}
+                                        previousLabel={"Previous"}
+                                        nextLabel={"Next"}
+                                        breakLabel={"..."}
+                                        breakClassName={"page-item"}
+                                        breakLinkClassName={"page-link"}
+                                        pageClassName={"page-item"}
+                                        previousClassName={"page-item"}
+                                        pageLinkClassName={"page-link"}
+                                        pageRangeDisplayed={5}
+                                        nextClassName={"page-item"}
+                                        previousLinkClassName={"page-link"}
+                                        nextLinkClassName={"page-link"}
+                                        // marginPagesDisplayed={this.state.pageCount}
+                                        pageRangeDisplayed={this.state.limit}
+                                        pageCount={this.state.pageCount}
+                                        pageRangeDisplayed={10}
+                                        onPageChange={this.handlePageClick}
+                                        containerClassName={"pagination"}
+                                        subContainerClassName={""}
+                                        activeClassName={"active"}
+                                    />
+                                </div>
                             </div>
+                            <Footer />
                         </div>
-                        <Footer />
                     </div>
-                </div>
+                }
             </div>
         )
     }

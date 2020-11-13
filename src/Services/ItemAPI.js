@@ -58,11 +58,18 @@ export function getItemPicture(itemId) {
     });
 }
 
+export function getItemPictureById(itemId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/misc/getitem/${itemId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
 
 export function saveItemPicture(data) {
     return axios.post(`https://bimiscwebapi-test.azurewebsites.net/api/misc/saveitempicture`, data, {
         headers: {
-            "Accept": "application/json",
+            // "Accept": "application/json",
             "Content-Type": "multipart/form data"
         }
     }).then(response => {

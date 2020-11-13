@@ -4,8 +4,8 @@ import Footer from '../_layout/Footer/Footer'
 import Header from '../_layout/Header/Header'
 import SideNav from '../_layout/SideNav/SideNav'
 import { Link } from 'react-router-dom'
-import { Form, Input, notification, Button } from 'antd';
-
+import { Form, Input, notification } from 'antd';
+import moment from 'moment';
 export default class AddRoles extends Component {
 
     state = {
@@ -28,18 +28,15 @@ export default class AddRoles extends Component {
 
         const sendRoleData = values => {
             const data = {
-                Content: [
-                    {
-                        Id: this.state.Id,
-                        Name: values.Name,
-                        RecordStatusId: this.state.RecordStatusId,
-                        CreatedBy: this.state.CreatedBy,
-                        ModifiedBy: this.state.ModifiedBy
-                    }
-                ]
+                Id: this.state.Id,
+                Name: values.Name,
+                RecordStatusId: this.state.RecordStatusId,
+                CreatedBy: this.state.CreatedBy,
+                ModifiedBy: this.state.ModifiedBy,
+                DateCreated: moment(new Date()).format('YYYY-MM-DD'),
+                DateModified: moment(new Date()).format('YYYY-MM-DD')
             }
             postRole(data).then(res => {
-                console.log('res => ', res);
                 if (res.data.status === true) {
                     formRef.current.resetFields();
                     notification.open({
@@ -66,9 +63,9 @@ export default class AddRoles extends Component {
                         <div className="container-fluid">
                             <div className="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
                                 <h1 className="h3 mb-0 text-gray-800">Add Roles</h1>
-                                {/* <Link to="/roles-list" className="btn btn-orange-search">View Role List</Link> */}
+                                <Link to="/roles-list" className="btn btn-orange-search">View Role List</Link>
                             </div>
-                            {/* <div className="trade-form-wrap mt-5 mb-5">
+                            <div className="trade-form-wrap mt-5 mb-5">
                                 <div className="row">
                                     <div className="col-lg-6">
                                         <div className="bg-white p-5 form-border">
@@ -84,15 +81,13 @@ export default class AddRoles extends Component {
                                                     </Form.Item>
                                                 </div>
                                                 <div className="mt-4">
-                                                    <Form.Item>
-                                                        <Button type="primary" htmlType="submit">Submit</Button>
-                                                    </Form.Item>
+                                                    <button type="submit" className="btn btn-orange-search">Submit</button>
                                                 </div>
                                             </Form>
                                         </div>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                         <Footer />
                     </div>

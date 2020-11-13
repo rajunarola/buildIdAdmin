@@ -21,9 +21,8 @@ export default class EdittTrades extends Component {
 
     componentDidMount() {
         const tradeId = this.props.match.params.id;
-        console.log('this.props.match.params.id => ', this.props.match.params.id);
         getTradeById(tradeId).then(res => {
-            console.log('res => ', res);
+            console.log('res getTradeById=> ', res);
             this.setState({
                 Id: res.data.data.id,
                 Name: res.data.data.name,
@@ -35,14 +34,21 @@ export default class EdittTrades extends Component {
             });
         }).catch(err => {
             console.log('err => ', err);
-
-        })
+            notification.open({
+                message: 'Error',
+                description: 'There was an error while fetching trade data!'
+            });
+        });
 
         getRecordStatusForTrades().then(res => {
             console.log('res getRecordStatusForTrades=> ', res);
             this.setState({ changeRecordStatusId: res.data.data })
         }).catch(err => {
             console.log('err => ', err);
+            notification.open({
+                message: 'Error',
+                description: 'There was an error while fetching record status for trade!'
+            });
         });
     }
 
@@ -70,8 +76,18 @@ export default class EdittTrades extends Component {
             }
             postTrades(data).then(res => {
                 console.log('res => ', res);
+                if (res.data.status === true) {
+                    notification.open({
+                        message: 'Success',
+                        description: 'Trade has been  successfully updated!'
+                    });
+                }
             }).catch(err => {
                 console.log('err => ', err);
+                notification.open({
+                    message: 'Error',
+                    description: 'There was an error while updating trade!'
+                });
             });
         }
 

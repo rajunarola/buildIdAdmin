@@ -10,6 +10,14 @@ export function getAllTickets(pageNumber) {
     });
 }
 
+export function getTicketById(ticketId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/tickets/gettickettype/${ticketId}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
+
 export function getSearchedTicket(pageNumber, searchString) {
     return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/tickets/gettickettypes/10/${pageNumber}/${searchString}`).then(response => {
         return response

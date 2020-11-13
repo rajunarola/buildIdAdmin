@@ -74,10 +74,8 @@ export default class Trades extends Component {
                                                         <Input onChange={(event) => this.changeHandler(event)} />
                                                     </Form.Item>
                                                 </div>
-                                                <div className="text-left">
-                                                    <Form.Item>
-                                                        <Button type="primary" htmlType="submit">Submit</Button>
-                                                    </Form.Item>
+                                                <div className="mt-4">
+                                                    <button type="submit" className="btn btn-orange-search">Submit</button>
                                                 </div>
                                             </Form>
                                         </div>

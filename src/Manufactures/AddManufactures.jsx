@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { postManufacturers, getRecordStatusForManufacturers } from '../Services/ManufacturersAPI'
+import { postManufacturers } from '../Services/ManufacturersAPI'
 import Footer from '../_layout/Footer/Footer'
 import Header from '../_layout/Header/Header'
 import SideNav from '../_layout/SideNav/SideNav'
-import moment from 'moment';
-import { Select, notification, Form, Input } from 'antd';
+import { notification, Form, Input, Button } from 'antd';
 
 export default class AddManufactures extends Component {
 
@@ -107,7 +106,7 @@ export default class AddManufactures extends Component {
                                                     </Form.Item>
                                                 </div>
                                                 <div className="mt-4">
-                                                    <button type="submit" className="btn btn-blue-search">Submit</button>
+                                                    <button type="submit" className="btn btn-orange-search">Submit</button>
                                                 </div>
                                             </Form>
                                         </div>

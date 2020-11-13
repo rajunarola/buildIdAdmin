@@ -35,6 +35,8 @@ export default class AddProjects extends Component {
 
     render() {
 
+        const formRef = React.createRef();
+
         const onFinishFailed = errorInfo => {
             console.log('Failed:', errorInfo);
         }
@@ -45,24 +47,24 @@ export default class AddProjects extends Component {
                 Content: [
                     {
                         Id: this.state.Id,
-                        Name: values.tradeName,
+                        Name: values.projectName,
                         RecordStatusId: this.state.RecordStatusId,
                         CreatedBy: 1,
                         Address: values.address,
                         Country: values.country,
-                        DateCreated: moment(new Date()).format('YYYY-MM-DD'),
+                        Province: values.province,
                         ModifiedBy: 1,
-                        DateModified: moment(new Date()).format('YYYY-MM-DD'),
-                        Active: 1
+                        Active: 1,
+                        StartDate: moment(new Date()).format('YYYY-MM-DD'),
+                        EndDate: moment(new Date()).format('YYYY-MM-DD'),
+                        BuildingTypeId: 1,
+                        ContractorId: 1,
                     }
                 ]
             }
             postProject({ Content: JSON.stringify(data.Content) }).then(res => {
                 if (res.data.status === true) {
-                    this.setState({
-                        Name: '',
-                        RecordStatusId: ''
-                    });
+                    formRef.current.resetFields();
                     notification.open({
                         message: 'Success',
                         description: 'Trade has been successfully added!'
@@ -88,21 +90,22 @@ export default class AddProjects extends Component {
                         <div class="container-fluid">
                             <div class="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
                                 <h1 class="h3 mb-0 text-gray-800">Add Project</h1>
-                                {/* <Link to="/project-list" class="btn btn-orange-search">View Project List</Link> */}
+                                <Link to="/project-list" class="btn btn-orange-search">View Project List</Link>
                             </div>
 
-                            {/* <div class="trade-form-wrap">
+                            <div class="trade-form-wrap">
                                 <div class="row mt-5">
                                     <div class="col-lg-6">
                                         <div class="bg-white p-5 form-border">
                                             <Form onFinish={sendProjectData}
-                                                onFinishFailed={onFinishFailed}>
+                                                onFinishFailed={onFinishFailed}
+                                                ref={formRef}>
                                                 <div class="form-group">
-                                                    <label>Trade Name</label>
+                                                    <label>Project Name</label>
                                                     <Form.Item
                                                         value={this.state.name}
-                                                        name="tradeName"
-                                                        rules={[{ required: true, message: 'Please enter Trade Name!' }]}>
+                                                        name="projectName"
+                                                        rules={[{ required: true, message: 'Please enter Project Name!' }]}>
                                                         <Input onChange={(event) => this.changeHandler(event)} />
                                                     </Form.Item>
                                                 </div>
@@ -113,7 +116,7 @@ export default class AddProjects extends Component {
                                                             name={['address']}
                                                             noStyle
                                                             rules={[{ required: true, message: 'Address is required' }]} >
-                                                            <Input style={{ width: '50%' }} placeholder="Address" />
+                                                            <Input style={{ width: '100%' }} placeholder="Address" />
                                                         </Form.Item>
                                                     </Form.Item>
                                                 </div>
@@ -124,7 +127,7 @@ export default class AddProjects extends Component {
                                                             name={['city']}
                                                             noStyle
                                                             rules={[{ required: true, message: 'City is required' }]}>
-                                                            <Input style={{ width: '50%' }} placeholder="City" />
+                                                            <Input style={{ width: '100%' }} placeholder="City" />
                                                         </Form.Item>
                                                     </Form.Item>
                                                 </div>
@@ -135,7 +138,18 @@ export default class AddProjects extends Component {
                                                             name={['postalCode']}
                                                             noStyle
                                                             rules={[{ required: true, message: 'Postal Code is required' }]}>
-                                                            <Input style={{ width: '50%' }} placeholder="Postal Code" />
+                                                            <Input style={{ width: '100%' }} placeholder="Postal Code" />
+                                                        </Form.Item>
+                                                    </Form.Item>
+                                                </div>
+                                                <div>
+                                                    <label>Province</label>
+                                                    <Form.Item>
+                                                        <Form.Item
+                                                            name={['province']}
+                                                            noStyle
+                                                            rules={[{ required: true, message: 'Province  is required' }]}>
+                                                            <Input style={{ width: '100%' }} placeholder="Province" />
                                                         </Form.Item>
                                                     </Form.Item>
                                                 </div>
@@ -146,7 +160,7 @@ export default class AddProjects extends Component {
                                                             name={['country']}
                                                             noStyle
                                                             rules={[{ required: true, message: 'Country is required' }]}>
-                                                            <Input style={{ width: '50%' }} placeholder="Country" />
+                                                            <Input style={{ width: '100%' }} placeholder="Country" />
                                                         </Form.Item>
                                                     </Form.Item>
                                                 </div>
@@ -166,7 +180,7 @@ export default class AddProjects extends Component {
                                         </div>
                                     </div>
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                         <Footer />
                     </div>

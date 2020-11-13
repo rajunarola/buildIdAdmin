@@ -29,6 +29,8 @@ import EdittTrades from './Trades/EdittTrades';
 import EditCompany from './Company/EditCompany';
 import EditItem from './Item/EditItem';
 import EditBuildingType from './BuildingType/EditBuildingType';
+import EditRoles from './Roles/EditRoles';
+import EditTickets from './Tickets/EditTickets';
 class App extends React.Component {
 
     render() {
@@ -56,8 +58,10 @@ class App extends React.Component {
                         <Route path="/edit-building-type/:id" exact component={EditBuildingType} />
                         <Route path="/add-roles" exact component={AddRoles} />
                         <Route path="/roles-list" exact component={RolesList} />
+                        <Route path="/edit-role/:id" exact component={EditRoles} />
                         <Route path="/add-ticket" exact component={AddTickets} />
                         <Route path="/ticket-list" exact component={TicketsList} />
+                        <Route path="/edit-ticket-list/:id" exact component={EditTickets} />
                         <Route path="/add-project" exact component={AddProjects} />
                         <Route path="/project-list" exact component={ProjectsList} />
                         <Route path="/add-company-address" exact component={SaveCompanyAddress} />

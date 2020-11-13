@@ -142,7 +142,7 @@ export default class CompanyAddressList extends Component {
                         <div class="container-fluid">
                             <div class="main-title-lg mb-5 d-flex justify-content-between">
                                 <h1 class="h3 text-gray-800">Company Address List</h1>
-                                <Link to="/add-company" class="btn btn-orange-search">Add Company</Link>
+                                <Link to="/add-company-address" class="btn btn-orange-search">Add Company Address List</Link>
                             </div>
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">

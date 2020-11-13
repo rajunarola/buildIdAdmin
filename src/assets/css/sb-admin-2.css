@@ -10826,3 +10826,11 @@ ul.pagination {
   background-color: #36b9cc !important;
   border-color: #36b9cc !important;
 }
+
+.dimmer {
+  position: relative;
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
