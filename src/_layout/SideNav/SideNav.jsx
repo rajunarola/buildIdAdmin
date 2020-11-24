@@ -39,66 +39,58 @@ export default class SideNav extends Component {
                     </li>
 
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-building-type">
+                        <Link className="nav-link" to="/building-type-list">
                             <i className="fas fa-fw fa-building"></i>
                             <span>Building Types</span>
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-company">
+                        <Link className="nav-link" to="/company-list">
                             <i className="fas fa-fw fa-cog"></i>
                             <span>Companies</span>
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-item">
+                        <Link className="nav-link" to="/item-list">
                             <i className="fas fa-fw fa-list"></i>
                             <span>Items</span>
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-manufacturer">
+                        <Link className="nav-link" to="/manufacturers-list">
                             <i className="fas fa-fw fa-wrench"></i>
                             <span>Manufacturers</span>
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-project">
+                        <Link className="nav-link" to="/project-list">
                             <i className="fas fa-fw fa-chart-area"></i>
                             <span>Projects</span>
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-ticket">
+                        <Link className="nav-link" to="/ticket-list">
                             <i className="fas fa-fw fa-ticket-alt"></i>
                             <span>TicketTypes</span>
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-trade">
+                        <Link className="nav-link" to="/trade-list">
                             <i className="fas fa-fw fa-suitcase"></i>
                             <span>Trades</span>
                         </Link>
                     </li>
                     <li className="nav-item">
-                        <Link className="nav-link" to="/add-roles">
+                        <Link className="nav-link" to="/roles-list">
                             <i className="fas fa-fw fa-globe"></i>
                             <span>Roles</span>
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link className="nav-link" to="/add-company-address">
-                            <i className="fas fa-fw fa-building"></i>
-                            <span>Company Address</span>
                         </Link>
                     </li>
                     <hr className="sidebar-divider d-none d-md-block" />
                     <div className="text-center d-none d-md-inline" onClick={() => this.toggledSideNav()}>
                         <button className="rounded-circle border-0 arrow-btn"></button>
                     </div>
-
                 </ul>
-
             </div>
         )
     }

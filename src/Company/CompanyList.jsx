@@ -85,14 +85,13 @@ export default class CompanyList extends Component {
     }
 
     handlePageClick = page => {
-        console.log('page => ', page);
-
         const pageno = page.selected + 1;
         getAllCompany(pageno).then(res => {
-            this.setState({ companyData: res.data.data, total: res.data.message });
+            this.setState({ companyData: res.data.data, total: res.data.message, loading: false });
             let pageCount = this.state.total / this.state.limit
             this.setState({ pageCount: pageCount, currentPage: pageno })
         }).catch(err => {
+            this.setState({ loading: false });
             notification.open({
                 message: 'Error',
                 description: 'There was an error while fetching comapany data!'
@@ -110,7 +109,6 @@ export default class CompanyList extends Component {
         }).then((willDelete) => {
             if (willDelete) {
                 deleteCompany(Id).then(res => {
-                    console.log('res => ', res);
                     notification.open({
                         message: 'Success',
                         description: 'Company Data deleted successfully!'
@@ -118,7 +116,7 @@ export default class CompanyList extends Component {
                     getAllCompany(this.state.currentPage).then(res => {
                         this.setState({ companyData: res.data.data, total: res.data.message });
                         let pageCount = this.state.total / this.state.limit
-                        this.setState({ pageCount: pageCount })
+                        this.setState({ pageCount: pageCount });
                     }).catch(err => {
                         notification.open({
                             message: 'Error',

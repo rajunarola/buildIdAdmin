@@ -51,7 +51,15 @@ export function getRecordStatusForCompanies() {
 }
 
 export function getCompanyAddress(pageNumber) {
-    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/companies/getcompanyaddresses/20/10/${pageNumber}`).then(response => {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/companies/getcompanyaddresses/com/10/${pageNumber}`).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    })
+}
+
+export function getOnlyOneCompanyAddress(companyId) {
+    return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/companies/getcompanyaddresses/${companyId}/10/1`).then(response => {
         return response
     }).catch(error => {
         return error
