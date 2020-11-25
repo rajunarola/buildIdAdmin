@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import React, { Component } from "react";
 import { Link, NavLink } from "react-router-dom";
 import Loader from "../Loader/Loader";
@@ -25,14 +26,17 @@ export default class Login extends Component {
       password: this.state.password,
     };
     userLogin(data).then((response) => {
-      console.log("response => ", response);
       if (response.data.status === true) {
         this.setState({ loading: false });
         localStorage.setItem("userID", response.data.data);
         this.props.history.push("/dashboard");
       }
     }).catch((err) => {
-      console.log("err => ", err);
+      this.setState({ loading: false });
+      notification.open({
+        message: 'Error',
+        description: 'Invalid username or password!'
+      });
     });
   };
 
@@ -101,7 +105,7 @@ export default class Login extends Component {
                               </button>
                             </div>
                             <div className="text-center mt-3">
-                              <NavLink to="/register">
+                              <NavLink to="/register" className="color_text_c">
                                 <b>Create an Account!</b>
                               </NavLink>
                             </div>

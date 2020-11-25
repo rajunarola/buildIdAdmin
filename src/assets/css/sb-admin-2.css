@@ -10821,11 +10821,11 @@ ul.pagination {
   margin-right: 20px;
 }
 
-.page-item.active .page-link, .page-item .page-link:hover {
+/* .page-item.active .page-link, .page-item .page-link:hover {
   color: #fff;
   background-color: #36b9cc !important;
   border-color: #36b9cc !important;
-}
+} */
 
 .dimmer {
   position: relative;
@@ -10833,4 +10833,97 @@ ul.pagination {
   height: 100vh;
   align-items: center;
   justify-content: center;
+}
+
+/* --------- */
+
+.txt-orange {
+  color: #4e73df !important;
+}
+
+.btn-orange-search {
+  background-color: #4e73df !important;
+  color: #fff !important;
+}
+
+.navbar-bg-orange {
+  background-color: #ebf0ff !important;
+}
+
+.sidebar-dark .sidebar-brand {
+  color: #4e73df !important;
+  background-color: #b5c8ff;
+  margin: 0 0 20px 0;
+}
+
+.sidebar-dark .nav-item.active .nav-link {
+  color: #4e73df;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar .nav-item .nav-link {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 0 2px 0;
+  text-align: left !important;
+  padding: 10px 10px 10px 15px !important;
+  width: 14rem !important;
+}
+
+.sidebar-dark .nav-item .nav-link {
+  color: #555555 !important;
+}
+
+.sidebar-dark .nav-item .nav-link i {
+  color: #555555 !important;
+}
+
+.sidebar-dark .nav-item .nav-link:active, .sidebar-dark .nav-item .nav-link:focus, .sidebar-dark .nav-item .nav-link:hover {
+  color: #4e73df !important;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar-dark .nav-item .nav-link:active i, .sidebar-dark .nav-item .nav-link:focus i, .sidebar-dark .nav-item .nav-link:hover i {
+  color: #4e73df !important;
+}
+
+.sidebar-dark .nav-item.active .nav-link i {
+  color: #4e73df !important;
+}
+
+.sidebar-dark .nav-item.active .nav-link {
+  color: #4e73df !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.sidebar .nav-item .nav-link span {
+  font-size: 16px !important;
+  display: inline !important;
+}
+
+.page-item.active .page-link, .page-item .page-link:hover {
+  background-color: #4e73df !important;
+  border-color: #4e73df !important;
+  color: white !important;
+}
+
+.content-relative {
+  padding-bottom: 80px !important;
+  position: relative;
+}
+
+.bg-img-lg {
+  background-color: #4e73df !important;
+}
+
+.btn-login-mx {
+  background-color: #4a6ed6 !important;
+}
+
+.btn-login-mx:hover {
+  background-color: #486cd5 !important;
+}
+
+.color_text_c {
+  color: #4b6fd9;
 }

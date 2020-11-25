@@ -32,7 +32,6 @@ export default class EditCompany extends Component {
   componentDidMount() {
     const companyId = this.props.match.params.id;
     getCompanyById(companyId).then(res => {
-      console.log('res => ', res);
       if (res.status === 200) {
         this.setState({
           Id: res.data.data.id,
@@ -48,10 +47,10 @@ export default class EditCompany extends Component {
         });
       }
     }).catch(err => {
-      // notification.open({
-      //     message: 'Error',
-      //     description: 'There was an error while fetching company data!'
-      // });
+      notification.open({
+        message: 'Error',
+        description: 'There was an error while fetching company data!'
+      });
     });
 
     getRecordStatusForCompanies().then(res => {
@@ -67,23 +66,17 @@ export default class EditCompany extends Component {
 
     getOnlyOneCompanyAddress(companyId).then(Res => {
       let array = [];
-      console.log('Res => ', Res.data.data);
       if (Res.status === 200) {
-        console.log('in if');
         Res.data.data.map(data => {
           array.push(data)
-          this.setState({ companyAddress: array ? array : Res.data.data })
-        }, () => {
-          console.log('this.state.companyAddress => ', this.state.companyAddress);
-
+          this.setState({ companyAddress: array })
         })
-      } else {
-        console.log('in else');
       }
-
     }).catch(err => {
-      console.log('err => ', err);
-
+      notification.open({
+        message: 'Error',
+        description: 'There was an error while fetching company address!'
+      });
     })
   }
 
@@ -92,12 +85,8 @@ export default class EditCompany extends Component {
   }
 
   changeHandler = (event) => {
-
     this.setState({
       [event.target.name]: event.target.value
-    }, () => {
-      console.log('this.state => ', this.state);
-
     });
   }
 
@@ -161,23 +150,21 @@ export default class EditCompany extends Component {
         ]
       }
       postCompanyAddress({ Content: JSON.stringify(data.Content) }).then(res => {
-        console.log('res => ', res);
         if (res.data.status === true) {
           notification.open({
             message: 'Success',
-            description: 'Company data has been successfully added!'
+            description: 'Company data has been updated successfully!'
           });
         }
       }).catch(err => {
         notification.open({
           message: 'Error',
-          description: 'There was an error while adding Company Data!'
+          description: 'There was an error while updating Company Data!'
         });
       });
     }
 
     const addAddress = (values) => {
-      console.log('values => ', values);
       const data = {
         Content: [
           {
@@ -197,12 +184,15 @@ export default class EditCompany extends Component {
         ]
       }
       postCompanyAddress({ Content: JSON.stringify(data.Content) }).then(res => {
-        console.log('res => ', res);
-        if (res.data.status === true) {
-          // formRef.current.resetFields();
+        if (res.data.data === -1) {
+          notification.open({
+            message: 'Error',
+            description: 'A company with same data address exist already!'
+          });
+        } else if (res.data.data !== -1) {
           notification.open({
             message: 'Success',
-            description: 'Company data has been successfully added!'
+            description: 'Company data has been added successfully!'
           });
         }
       }).catch(err => {

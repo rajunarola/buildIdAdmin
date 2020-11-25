@@ -7,8 +7,14 @@ export default class Dashboard extends Component {
     render() {
         return (
             <div>
-                {/* <Header /> */}
-                <SideNav />
+                <div className="d-flex">
+                    <SideNav />
+                    <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
+                        <div className="content">
+                            <Header />
+                        </div>
+                    </div>
+                </div>
                 {/* <Footer /> */}
             </div>
         )

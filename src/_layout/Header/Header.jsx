@@ -38,7 +38,7 @@ export default class Header extends Component {
                         </li>
                         <li className={this.state.showModal ? "nav-item dropdown no-arrow show" : "nav-item dropdown no-arrow"} onClick={() => this.showModalDropDown()}>
                             <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span className="mr-2 d-none d-lg-inline text-gray-600 small">Valerie Luna</span>
+                                <span className="mr-2 d-none d-lg-inline text-gray-600 large">Valerie Luna</span>
                                 <img className="img-profile rounded-circle" src='https://source.unsplash.com/QAB-WJcbgJk/60x60' alt="Img" />
                             </a>
                             <div className={this.state.showModal ? "dropdown-menu dropdown-menu-right shadow animated--grow-in show" : "dropdown-menu dropdown-menu-right shadow animated--grow-in"} aria-labelledby="userDropdown">
