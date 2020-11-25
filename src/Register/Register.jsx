@@ -14,7 +14,7 @@ export default class Register extends Component {
                                         <div>
                                             <div className="p-5">
                                                 <div className="text-center">
-                                                    <h1 className="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                                                    <h1 className="h4 color_text_c mb-4">Welcome Back!</h1>
                                                 </div>
                                                 <form className="user">
                                                     <div className="form-group row">
