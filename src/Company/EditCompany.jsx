@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom'
 import Footer from '../_layout/Footer/Footer'
 import Header from '../_layout/Header/Header'
 import SideNav from '../_layout/SideNav/SideNav'
-import { Form, Input, Select, notification, Button, Checkbox } from 'antd';
+import { Form, Input, Select, notification, Button, Checkbox, Space } from 'antd';
 import moment from 'moment';
 import { getCompanyById, getRecordStatusForCompanies, postCompany, getCompanyAddress, getOnlyOneCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 export default class EditCompany extends Component {
 
@@ -165,25 +166,14 @@ export default class EditCompany extends Component {
     }
 
     const addAddress = (values) => {
-      const data = {
-        Content: [
-          {
-            Id: 0,
-            CompanyId: this.props.match.params.id,
-            Type: values.Type,
-            Address: values.Address,
-            City: values.City,
-            Province: values.Province,
-            PostalCode: values.PostalCode,
-            Country: values.Country,
-            RecordStatusId: 1,
-            CreatedBy: 1,
-            ModifiedBy: 1,
-            ContactPerson: values.ContactPerson
-          }
-        ]
+      for (let index = 0; index < values.sights.length; index++) {
+        values.sights[index].Id = 0;
+        values.sights[index].CompanyId = this.props.match.params.id;
+        values.sights[index].RecordStatusId = 1;
+        values.sights[index].CreatedBy = 1;
+        values.sights[index].ModifiedBy = 1;
       }
-      postCompanyAddress({ Content: JSON.stringify(data.Content) }).then(res => {
+      postCompanyAddress({ Content: JSON.stringify(values.sights) }).then(res => {
         if (res.data.data === -1) {
           notification.open({
             message: 'Error',
@@ -254,7 +244,7 @@ export default class EditCompany extends Component {
                           <label className="form-check-label mr-5">Active</label>
                         </div>
                         <Form.Item>
-                          <Button type="primary" htmlType="submit">Update Company</Button>
+                          <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
                         </Form.Item>
                       </Form>
                     </div>
@@ -313,7 +303,7 @@ export default class EditCompany extends Component {
                                 </Form.Item>
                               </div>
                               <Form.Item>
-                                <Button type="primary" htmlType="submit">Update Address</Button>
+                                <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Address</Button>
                               </Form.Item>
                             </Form>
                           </>
@@ -323,51 +313,87 @@ export default class EditCompany extends Component {
                     <div className="col-lg-6">
                       <div className="bg-white p-5 form-border">
                         <Form onFinish={addAddress}>
-                          <div className="form-group">
-                            <label className="formlabel">Address</label>
-                            <Form.Item name="Address" >
-                              <Input onChange={(e) => this.changeHandler(e)} />
+                          <Form.List name="sights">
+                            {(fields, { add, remove }) => (
+                              <>
+                                {fields.map((field, i) => (
+                                  <Space key={field.key} align="baseline">
+                                    <Form.Item
+                                      noStyle
+                                      shouldUpdate={(prevValues, curValues) =>
+                                        prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
+                                      }>
+                                      {() => (
+                                        <>
+                                          <div className="form-group">
+                                            <label className="formlabel">Address {i + 1}</label>
+                                            <Form.Item name={[field.name, 'Address']}
+                                              fieldKey={[field.fieldKey, 'Address']}>
+                                              <Input onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Type {i + 1}</label>
+                                            <Form.Item
+                                              name={[field.name, 'Type']}
+                                              fieldKey={[field.fieldKey, 'Type']}>
+                                              <Input onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">City {i + 1} </label>
+                                            <Form.Item name={[field.name, 'City']}
+                                              fieldKey={[field.fieldKey, 'City']}>
+                                              <Input onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Province {i + 1}</label>
+                                            <Form.Item name={[field.name, 'Province']}
+                                              fieldKey={[field.fieldKey, 'Province']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Postal Code {i + 1}</label>
+                                            <Form.Item name={[field.name, 'PostalCode']}
+                                              fieldKey={[field.fieldKey, 'PostalCode']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Country {i + 1}</label>
+                                            <Form.Item name={[field.name, 'Country']}
+                                              fieldKey={[field.fieldKey, 'Country']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Contact Person {i + 1}</label>
+                                            <Form.Item name={[field.name, 'ContactPerson']}
+                                              fieldKey={[field.fieldKey, 'ContactPerson']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="formfieldremove">
+                                            <MinusCircleOutlined onClick={() => remove(field.name)} />
+                                          </div>
+                                        </>
+                                      )}
+                                    </Form.Item>
+                                  </Space>
+                                ))}
+                                <Form.Item>
+                                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>Add Address</Button>
+                                </Form.Item>
+                              </>
+                            )}
+                          </Form.List>
+                          <div className="mt-4">
+                            <Form.Item>
+                              <Button type="primary" htmlType="submit" className="btn btn-orange-search">Add Address</Button>
                             </Form.Item>
                           </div>
-                          <div className="form-group">
-                            <label className="formlabel">Type</label>
-                            <Form.Item name="Type" >
-                              <Input onChange={(e) => this.changeHandler(e)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-group">
-                            <label className="formlabel">City</label>
-                            <Form.Item name="City">
-                              <Input onChange={(e) => this.changeHandler(e)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-group">
-                            <label className="formlabel">Province</label>
-                            <Form.Item name="Province" >
-                              <Input onChange={(event) => this.changeHandler(event)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-group">
-                            <label className="formlabel">Postal Code</label>
-                            <Form.Item name="PostalCode" >
-                              <Input onChange={(event) => this.changeHandler(event)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-group">
-                            <label className="formlabel">Country</label>
-                            <Form.Item name="Country" >
-                              <Input onChange={(event) => this.changeHandler(event)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-group">
-                            <label className="formlabel">Contact Person</label>
-                            <Form.Item name="ContactPerson" >
-                              <Input onChange={(event) => this.changeHandler(event)} />
-                            </Form.Item>
-                          </div>
-                          <Form.Item>
-                            <Button type="primary" htmlType="submit">Add Company</Button>
-                          </Form.Item>
                         </Form>
                       </div>
                     </div>

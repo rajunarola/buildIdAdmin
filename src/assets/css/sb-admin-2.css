@@ -10927,3 +10927,7 @@ ul.pagination {
 .color_text_c {
   color: #4b6fd9;
 }
+
+.hello .ant-space-align-baseline {
+  margin-right: 30px;
+}
