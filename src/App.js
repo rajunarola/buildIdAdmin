@@ -23,7 +23,6 @@ import TicketsList from './Tickets/TicketsList';
 import ProjectsList from './Projects/ProjectsList';
 import AddProjects from './Projects/AddProjects';
 import EditManufacturers from './Manufactures/EditManufacturers';
-import CompanyAddressList from './Company/CompanyAddressList';
 import EdittTrades from './Trades/EdittTrades';
 import EditCompany from './Company/EditCompany';
 import EditItem from './Item/EditItem';
@@ -63,7 +62,6 @@ class App extends React.Component {
                         <Route path="/edit-ticket-list/:id" exact component={EditTickets} />
                         <Route path="/add-project" exact component={AddProjects} />
                         <Route path="/project-list" exact component={ProjectsList} />
-                        <Route path="/company-address-list" exact component={CompanyAddressList} />
                         <Route path="/forgot-password" exact component={ForgotPassword} />
                     </Switch>
                 </BrowserRouter>

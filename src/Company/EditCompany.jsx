@@ -5,7 +5,7 @@ import Header from '../_layout/Header/Header'
 import SideNav from '../_layout/SideNav/SideNav'
 import { Form, Input, Select, notification, Button, Checkbox, Space } from 'antd';
 import moment from 'moment';
-import { getCompanyById, getRecordStatusForCompanies, postCompany, getCompanyAddress, getOnlyOneCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI'
+import { getCompanyById, getRecordStatusForCompanies, postCompany, getOnlyOneCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 export default class EditCompany extends Component {
@@ -21,13 +21,7 @@ export default class EditCompany extends Component {
     DateModified: '',
     Active: false,
     changeRecordStatusId: [],
-    companyAddress: [],
-    Address: '',
-    City: '',
-    Province: '',
-    PostalCode: '',
-    Country: '',
-    ContactPerson: ''
+    companyAddress: []
   }
 
   componentDidMount() {
@@ -66,17 +60,19 @@ export default class EditCompany extends Component {
     });
 
     getOnlyOneCompanyAddress(companyId).then(Res => {
-      console.log('Res => ', Res);
-
-      let array = [];
       if (Res.status === 200) {
-        Res.data.data.map(data => {
-          console.log('data => ', data);
-          array.push(data)
-          this.setState({
-            companyAddress: array
-          })
-        })
+        const changedValue =
+          Res.data.data.map(({ address, type, city, country, postalCode, province, contactPerson, companyId }) => ({
+            Address: address,
+            Type: type,
+            CompanyId: companyId,
+            City: city,
+            Country: country,
+            PostalCode: postalCode,
+            Province: province,
+            ContactPerson: contactPerson
+          }));
+        this.setState({ companyAddress: changedValue });
       }
     }).catch(err => {
       notification.open({
@@ -101,16 +97,7 @@ export default class EditCompany extends Component {
       [event.target.name]: event.target.value
     });
     var data = [...this.state.companyAddress];
-    // var index = data.findIndex(obj => obj.id === id);
-    // if (event.target.name === 'address') {
-    //   console.log('true');
-    //   data[index].Address = event.target.value;
-    //   console.log(' => ', data[index].Address);
-
-    // }
     data[index][event.target.name] = event.target.value;
-    console.log('data => ', data);
-    console.log('this.state.co => ', this.state.companyAddress);
   }
 
   getCheckBoxValue = (e) => {
@@ -252,7 +239,7 @@ export default class EditCompany extends Component {
                     </div>
                   </div>
                   {this.state.companyAddress.length > 0 ?
-                    <div className="col-lg-6">
+                    <div className="col-lg-6 hello">
                       <div className="bg-white p-5 form-border">
                         {this.state.companyAddress.map((data, index) => (
                           <>
@@ -260,37 +247,49 @@ export default class EditCompany extends Component {
                               <div className="form-group">
                                 <label className="formlabel">Address {index + 1}</label>
                                 <Form.Item>
-                                  <Input name="address" value={this.state.Address ? this.state.Address : data.address} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                  <Input name="Address" value={data.Address} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                </Form.Item>
+                              </div>
+                              <div className="form-group d-none">
+                                <label className="formlabel">Company Id {index + 1}</label>
+                                <Form.Item>
+                                  <Input name="Address" value={data.CompanyId} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                </Form.Item>
+                              </div>
+                              <div className="form-group">
+                                <label className="formlabel">Type {index + 1}</label>
+                                <Form.Item>
+                                  <Input name="Type" value={data.Type} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">City {index + 1}</label>
                                 <Form.Item>
-                                  <Input name="city" value={this.state.City ? this.state.City : data.city} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                  <Input name="City" value={data.City} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Province {index + 1}</label>
                                 <Form.Item>
-                                  <Input name="province" value={this.state.Province ? this.state.Province : data.province} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                  <Input name="Province" value={data.Province} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Postal Code {index + 1}</label>
                                 <Form.Item>
-                                  <Input name="postalCode" value={this.state.PostalCode ? this.state.PostalCode : data.postalCode} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                  <Input name="PostalCode" value={data.PostalCode} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Country {index + 1}</label>
                                 <Form.Item>
-                                  <Input name="country" value={this.state.Country ? this.state.Country : data.country} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                  <Input name="Country" value={data.Country} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Contact Person {index + 1}</label>
                                 <Form.Item>
-                                  <Input name="contactPerson" value={this.state.ContactPerson ? this.state.ContactPerson : data.contactPerson} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                  <Input name="ContactPerson" value={data.ContactPerson} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                             </Form>
@@ -301,7 +300,7 @@ export default class EditCompany extends Component {
                         </Form.Item>
                       </div>
                     </div> :
-                    <div className="col-lg-6">
+                    <div className="col-lg-6 hello">
                       <div className="bg-white p-5 form-border">
                         <Form onFinish={addAddress}>
                           <Form.List name="sights">
