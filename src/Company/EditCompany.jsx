@@ -66,11 +66,16 @@ export default class EditCompany extends Component {
     });
 
     getOnlyOneCompanyAddress(companyId).then(Res => {
+      console.log('Res => ', Res);
+
       let array = [];
       if (Res.status === 200) {
         Res.data.data.map(data => {
+          console.log('data => ', data);
           array.push(data)
-          this.setState({ companyAddress: array })
+          this.setState({
+            companyAddress: array
+          })
         })
       }
     }).catch(err => {
@@ -89,6 +94,23 @@ export default class EditCompany extends Component {
     this.setState({
       [event.target.name]: event.target.value
     });
+  }
+
+  changeHandlerUpdate = (event, index) => {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+    var data = [...this.state.companyAddress];
+    // var index = data.findIndex(obj => obj.id === id);
+    // if (event.target.name === 'address') {
+    //   console.log('true');
+    //   data[index].Address = event.target.value;
+    //   console.log(' => ', data[index].Address);
+
+    // }
+    data[index][event.target.name] = event.target.value;
+    console.log('data => ', data);
+    console.log('this.state.co => ', this.state.companyAddress);
   }
 
   getCheckBoxValue = (e) => {
@@ -130,27 +152,7 @@ export default class EditCompany extends Component {
     }
 
     const updateAddress = value => {
-      const data = {
-        Content: [
-          {
-            Id: this.state.Id,
-            CompanyId: this.state.CompanyId,
-            Type: value.Type,
-            Address: value.Address,
-            City: value.City,
-            Province: value.Province,
-            PostalCode: value.PostalCode,
-            Country: value.Country,
-            RecordStatusId: 1,
-            CreatedBy: 1,
-            ModifiedBy: 1,
-            ContactPerson: value.ContactPerson,
-            Email: value.Email,
-            Phone: value.Phone
-          }
-        ]
-      }
-      postCompanyAddress({ Content: JSON.stringify(data.Content) }).then(res => {
+      postCompanyAddress({ Content: JSON.stringify(this.state.companyAddress) }).then(res => {
         if (res.data.status === true) {
           notification.open({
             message: 'Success',
@@ -254,60 +256,49 @@ export default class EditCompany extends Component {
                       <div className="bg-white p-5 form-border">
                         {this.state.companyAddress.map((data, index) => (
                           <>
-                            <Form onFinish={updateAddress}>
+                            <Form>
                               <div className="form-group">
                                 <label className="formlabel">Address {index + 1}</label>
                                 <Form.Item>
-                                  <Input name="Address" value={data.address} onChange={(event) => this.changeHandler(event)} />
+                                  <Input name="address" value={this.state.Address ? this.state.Address : data.address} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">City {index + 1}</label>
-                                <Form.Item rules={[{
-                                  required: true,
-                                  message: "Please input your City!"
-                                }]}>
-                                  <Input name="City" value={data.city} onChange={(event) => this.changeHandler(event)} />
+                                <Form.Item>
+                                  <Input name="city" value={this.state.City ? this.state.City : data.city} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Province {index + 1}</label>
-                                <Form.Item rules={[{
-                                  required: false,
-                                }]}>
-                                  <Input name="Province" value={data.province} onChange={(event) => this.changeHandler(event)} />
+                                <Form.Item>
+                                  <Input name="province" value={this.state.Province ? this.state.Province : data.province} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Postal Code {index + 1}</label>
-                                <Form.Item rules={[{
-                                  required: false,
-                                }]}>
-                                  <Input name="PostalCode" value={data.postalCode} onChange={(event) => this.changeHandler(event)} />
+                                <Form.Item>
+                                  <Input name="postalCode" value={this.state.PostalCode ? this.state.PostalCode : data.postalCode} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Country {index + 1}</label>
-                                <Form.Item rules={[{
-                                  required: false,
-                                }]}>
-                                  <Input name="Country" value={data.country} onChange={(event) => this.changeHandler(event)} />
+                                <Form.Item>
+                                  <Input name="country" value={this.state.Country ? this.state.Country : data.country} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                               <div className="form-group">
                                 <label className="formlabel">Contact Person {index + 1}</label>
-                                <Form.Item rules={[{
-                                  required: false,
-                                }]}>
-                                  <Input name="ContactPerson" value={data.contactPerson} onChange={(event) => this.changeHandler(event)} />
+                                <Form.Item>
+                                  <Input name="contactPerson" value={this.state.ContactPerson ? this.state.ContactPerson : data.contactPerson} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
-                              <Form.Item>
-                                <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Address</Button>
-                              </Form.Item>
                             </Form>
                           </>
                         ))}
+                        <Form.Item>
+                          <Button type="primary" onClick={updateAddress} className="btn btn-orange-search">Update Address</Button>
+                        </Form.Item>
                       </div>
                     </div> :
                     <div className="col-lg-6">
