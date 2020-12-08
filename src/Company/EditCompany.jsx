@@ -60,18 +60,27 @@ export default class EditCompany extends Component {
     });
 
     getOnlyOneCompanyAddress(companyId).then(Res => {
+      console.log('Res => ', Res);
+
       if (Res.status === 200) {
         const changedValue =
-          Res.data.data.map(({ address, type, city, country, postalCode, province, contactPerson, companyId }) => ({
-            Address: address,
-            Type: type,
-            CompanyId: companyId,
-            City: city,
-            Country: country,
-            PostalCode: postalCode,
-            Province: province,
-            ContactPerson: contactPerson
-          }));
+          Res.data.data.map(({
+
+            address, type, city, country, postalCode, province, contactPerson, companyId, id, createdBy, modifiedBy, email, phone }) => ({
+              Address: address,
+              Type: type,
+              Id: id,
+              CompanyId: companyId,
+              City: city,
+              Country: country,
+              PostalCode: postalCode,
+              Province: province,
+              ContactPerson: contactPerson,
+              CreatedBy: createdBy,
+              ModifiedBy: modifiedBy,
+              Email: email,
+              Phone: phone
+            }));
         this.setState({ companyAddress: changedValue });
       }
     }).catch(err => {
@@ -98,6 +107,8 @@ export default class EditCompany extends Component {
     });
     var data = [...this.state.companyAddress];
     data[index][event.target.name] = event.target.value;
+    console.log('this.state.companyAddress => ', this.state.companyAddress);
+
   }
 
   getCheckBoxValue = (e) => {
@@ -256,6 +267,12 @@ export default class EditCompany extends Component {
                                   <Input name="Address" value={data.CompanyId} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
+                              <div className="form-group d-none">
+                                <label className="formlabel"> Id {index + 1}</label>
+                                <Form.Item>
+                                  <Input name="Id" value={data.Id} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                </Form.Item>
+                              </div>
                               <div className="form-group">
                                 <label className="formlabel">Type {index + 1}</label>
                                 <Form.Item>
@@ -290,6 +307,18 @@ export default class EditCompany extends Component {
                                 <label className="formlabel">Contact Person {index + 1}</label>
                                 <Form.Item>
                                   <Input name="ContactPerson" value={data.ContactPerson} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                </Form.Item>
+                              </div>
+                              <div className="form-group">
+                                <label className="formlabel">Email {index + 1}</label>
+                                <Form.Item>
+                                  <Input name="Email" value={data.Email} onChange={(event) => this.changeHandlerUpdate(event, index)} />
+                                </Form.Item>
+                              </div>
+                              <div className="form-group">
+                                <label className="formlabel">Phone {index + 1}</label>
+                                <Form.Item>
+                                  <Input name="Phone" value={data.Phone} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                             </Form>
@@ -362,6 +391,20 @@ export default class EditCompany extends Component {
                                             <label className="formlabel">Contact Person {i + 1}</label>
                                             <Form.Item name={[field.name, 'ContactPerson']}
                                               fieldKey={[field.fieldKey, 'ContactPerson']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Email {i + 1}</label>
+                                            <Form.Item name={[field.name, 'Email']}
+                                              fieldKey={[field.fieldKey, 'Email']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Phone {i + 1}</label>
+                                            <Form.Item name={[field.name, 'Phone']}
+                                              fieldKey={[field.fieldKey, 'Phone']}>
                                               <Input onChange={(event) => this.changeHandler(event)} />
                                             </Form.Item>
                                           </div>
