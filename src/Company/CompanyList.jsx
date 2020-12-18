@@ -8,7 +8,7 @@ import Footer from '../_layout/Footer/Footer';
 import SideNav from '../_layout/SideNav/SideNav';
 import { getAllCompany, deleteCompany, getSearchedCompany } from '../Services/CompanyAPI';
 import Loader from '../Loader/Loader';
-
+import moment from 'moment';
 export default class CompanyList extends Component {
 
     state = {
@@ -35,6 +35,13 @@ export default class CompanyList extends Component {
             title: "RecordStatus",
             dataIndex: "recordStatus",
             key: "recordStatus"
+        },
+        {
+            title: "Created Date",
+            dataIndex: "dateCreated",
+            key: "dateCreated",
+            sorter: (a, b) => moment(a.dateCreated).unix() - moment(b.dateCreated).unix(),
+            render: (dateCreated) => dateCreated !== null ? moment(dateCreated).format('MM-DD-YYYY') : '-'
         },
         {
             title: "Industry Name",

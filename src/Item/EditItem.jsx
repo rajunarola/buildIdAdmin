@@ -81,6 +81,8 @@ export default class EditItem extends Component {
     changeImage = (e) => {
         this.setState({ loading: true })
         const files = Array.from(e.target.files);
+        console.log('files => ', files);
+
         console.log('e => ', e, e.target.files[0]);
         const formData = new FormData();
         formData.append('Id', this.state.imageId)
@@ -92,7 +94,7 @@ export default class EditItem extends Component {
         saveItemPicture(formData).then(res => {
             console.log('response => ', res);
             if (res.data.status === true) {
-                this.setState({ loading: false })
+                this.setState({ loading: false });
                 // getItemPictureById(this.state.itemId).then(res => {
                 //     console.log('res getItemPicture=> ', res);
                 //     this.setState({
@@ -109,10 +111,17 @@ export default class EditItem extends Component {
                     message: 'Success',
                     description: 'Image Changed Successfully!'
                 });
+            } else {
+                this.setState({ loading: false });
+                notification.open({
+                    message: 'Error',
+                    description: 'There was an error while uploading an image! Please try again!'
+                });
             }
         }).catch(err => {
+            this.setState({ loading: false });
             notification.open({
-                message: 'Eroor',
+                message: 'Error',
                 description: 'There was an error while uploading an image! Please try again!'
             });
             console.log('error => ', err);

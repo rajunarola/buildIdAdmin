@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { postCompany, getRecordStatusForCompanies, postCompanyAddress } from '../Services/CompanyAPI'
+import { postCompanyAddress, newSaveCompany, postCompany } from '../Services/CompanyAPI'
 import Footer from '../_layout/Footer/Footer'
 import Header from '../_layout/Header/Header'
 import SideNav from '../_layout/SideNav/SideNav'
-import { Select, notification, Input, Form, Button, Space } from 'antd';
+import { notification, Input, Form, Button, Space } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 export default class Company extends Component {
+
+  formRef = React.createRef();
 
   state = {
     Id: 0,
@@ -19,6 +21,7 @@ export default class Company extends Component {
     Phone: '',
     IndustryId: 2,
     Active: false,
+    storeCompanyId: ''
   }
 
   changeHandler = (event) => {
@@ -31,61 +34,66 @@ export default class Company extends Component {
     this.setState({ Active: e });
   }
 
+  addAddress = (values) => {
+    for (let index = 0; index < values.length; index++) {
+      values[index].Id = 0;
+      values[index].CompanyId = this.state.storeCompanyId;
+      values[index].RecordStatusId = 1;
+      values[index].CreatedBy = parseInt(localStorage.getItem('userID'));
+      values[index].ModifiedBy = parseInt(localStorage.getItem('userID'));
+    }
+    postCompanyAddress({ Content: JSON.stringify(values) }).then(res => {
+      if (res.data.data === -1) {
+        notification.open({
+          message: 'Error',
+          description: 'A company with same data address exist already!'
+        });
+      } else if (res.data.data !== -1) {
+        this.formRef.current.resetFields();
+        notification.open({
+          message: 'Success',
+          description: 'Company data has been added successfully!'
+        });
+      }
+    }).catch(err => {
+      notification.open({
+        message: 'Error',
+        description: 'There was an error while adding Company Data!'
+      });
+    });
+  }
+
   render() {
 
-    const formRef = React.createRef();
-
     const sendCompanyData = value => {
+      console.log('value sendCompanyData=> ', value);
       const data = {
-        Content: [
-          {
-            Id: this.state.Id,
-            Name: value.Name,
-            RecordStatusId: this.state.RecordStatusId,
-            CreatedBy: this.state.CreatedBy,
-            ModifiedBy: this.state.ModifiedBy,
-            QbId: this.state.QbId,
-            WebSite: value.WebSite,
-            Phone: value.Phone,
-            IndustryId: this.state.IndustryId,
-            Active: this.state.Active
-          }
-        ]
+        Id: 0,
+        Name: value.Name,
+        RecordStatusId: 1,
+        CreatedBy: parseInt(localStorage.getItem('userID')),
+        ModifiedBy: parseInt(localStorage.getItem('userID')),
+        QbId: this.state.QbId,
+        WebSite: value.email,
+        Phone: value.PhoneNo,
+        IndustryId: 9,
+        Active: this.state.Active
       }
-      postCompany({ Content: JSON.stringify(data.Content) }).then(res => {
-        if (res.data.status === true) {
-          formRef.current.resetFields();
-          notification.open({
-            message: 'Success',
-            description: 'Company data has been successfully added!'
-          });
-        }
-      }).catch(err => {
-        notification.open({
-          message: 'Error',
-          description: 'There was an error while adding Company Data!'
-        });
-      });
-    }
-
-    const addAddress = (values) => {
-      for (let index = 0; index < values.sights.length; index++) {
-        values.sights[index].Id = 0;
-        values.sights[index].CompanyId = 20;
-        values.sights[index].RecordStatusId = 1;
-        values.sights[index].CreatedBy = 1;
-        values.sights[index].ModifiedBy = 1;
-      }
-      postCompanyAddress({ Content: JSON.stringify(values.sights) }).then(res => {
-        if (res.data.data === -1) {
+      // postCompany({ Content: JSON.stringify(data.Content) }).then(res => {
+      newSaveCompany(data).then(res => {
+        // newSaveCompany({ Content: JSON.stringify(data.Content) }).then(res => {
+        if (res.data.message === "OK") {
+          this.setState({ storeCompanyId: res.data.data });
+          this.addAddress(value.sight)
+          // notification.open({
+          //   message: 'Success',
+          //   description: 'Company data has been successfully added!'
+          // });
+          // return
+        } else if (res.data.message !== "OK") {
           notification.open({
             message: 'Error',
-            description: 'A company with same data address exist already!'
-          });
-        } else if (res.data.data !== -1) {
-          notification.open({
-            message: 'Success',
-            description: 'Company data has been added successfully!'
+            description: 'A record with the same name already exists in database. The save will not be finalized!'
           });
         }
       }).catch(err => {
@@ -95,6 +103,8 @@ export default class Company extends Component {
         });
       });
     }
+
+
 
     return (
       <div>
@@ -110,10 +120,10 @@ export default class Company extends Component {
                 <Link to="/company-list" className="btn btn-orange-search">View Company List</Link>
               </div>
               <div className="trade-form-wrap mt-5 mb-5">
-                <div className="row">
-                  <div className="col-lg-6">
-                    <div className="bg-white p-5 form-border">
-                      <Form onFinish={sendCompanyData} ref={formRef}>
+                <Form onFinish={sendCompanyData} ref={this.formRef}>
+                  <div className="row">
+                    <div className="col-lg-6">
+                      <div className="bg-white p-5 form-border">
                         <div className="form-group">
                           <label for="CompanyName">Company Name</label>
                           <Form.Item name="Name" rules={[{
@@ -131,27 +141,11 @@ export default class Company extends Component {
                         </div>
                         <div className="form-group">
                           <label for="PhoneNo">Phone No</label>
-                          <Form.Item name="PhoneNo" rules={[{
-                            required: true,
-                            message: "Please input your phone number!"
-                          }]}>
+                          <Form.Item name="PhoneNo" rules={[{ required: true, message: "Please input your phone number!" }]}>
                             <Input onChange={(event) => this.changeHandler(event)} />
                           </Form.Item>
                         </div>
-                        <div className="form-check">
-                          <input value={this.state.Active} className="form-check-input" type="checkbox" name="Active" onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
-                          <label className="form-check-label">Active</label>
-                        </div>
-                        <div className="mt-4">
-                          <button type="submit" className="btn btn-orange-search">Submit</button>
-                        </div>
-                      </Form>
-                    </div>
-                  </div>
-                  <div className="col-lg-6 hello">
-                    <div className="bg-white p-5 form-border">
-                      <Form onFinish={addAddress}>
-                        <Form.List name="sights">
+                        <Form.List name="sight">
                           {(fields, { add, remove }) => (
                             <>
                               {fields.map((field, i) => (
@@ -228,21 +222,24 @@ export default class Company extends Component {
                             </>
                           )}
                         </Form.List>
-                        <div className="mt-4">
-                          <Form.Item>
-                            <Button type="primary" htmlType="submit" className="btn btn-orange-search">Add Address</Button>
-                          </Form.Item>
+                        <div className="form-check">
+                          <input value={this.state.Active} className="form-check-input" type="checkbox" name="Active" onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
+                          <label className="form-check-label">Active</label>
                         </div>
-                      </Form>
+
+                        <div className="mt-4">
+                          <button type="submit" className="btn btn-orange-search">Submit</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Form>
               </div>
             </div>
             <Footer />
           </div>
         </div>
-      </div>
+      </div >
     )
   }
 }

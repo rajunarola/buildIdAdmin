@@ -107,8 +107,6 @@ export default class EditCompany extends Component {
     });
     var data = [...this.state.companyAddress];
     data[index][event.target.name] = event.target.value;
-    console.log('this.state.companyAddress => ', this.state.companyAddress);
-
   }
 
   getCheckBoxValue = (e) => {
@@ -307,18 +305,6 @@ export default class EditCompany extends Component {
                                 <label className="formlabel">Contact Person {index + 1}</label>
                                 <Form.Item>
                                   <Input name="ContactPerson" value={data.ContactPerson} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">Email {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Email" value={data.Email} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">Phone {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Phone" value={data.Phone} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
                             </Form>

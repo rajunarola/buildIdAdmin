@@ -89,3 +89,11 @@ export function deleteCompanyAddress(recordId) {
         return error
     });
 }
+
+export function newSaveCompany(data) {
+    return axios.post(`https://bimiscwebapi-test.azurewebsites.net/api/companies/savecompany`,data).then(response => {
+        return response
+    }).catch(error => {
+        return error
+    });
+}
