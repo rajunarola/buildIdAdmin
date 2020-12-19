@@ -4,13 +4,24 @@ import { postCompanyAddress, newSaveCompany, postCompany } from '../Services/Com
 import Footer from '../_layout/Footer/Footer'
 import Header from '../_layout/Header/Header'
 import SideNav from '../_layout/SideNav/SideNav'
-import { notification, Input, Form, Button, Space } from 'antd';
+import { notification, Input, Form, Button, Space, Select, Spin } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { debounce } from 'lodash';
+
 export default class Company extends Component {
 
   formRef = React.createRef();
 
+  constructor(props) {
+    super(props);
+    this.lastFetchId = 0;
+    this.fetchIndustry = debounce(this.fetchIndustry, 800);
+  }
+
   state = {
+    data: [],
+    fetching: false,
+    value: [],
     Id: 0,
     Name: '',
     RecordStatusId: 1,
@@ -21,7 +32,8 @@ export default class Company extends Component {
     Phone: '',
     IndustryId: 2,
     Active: false,
-    storeCompanyId: ''
+    storeCompanyId: '',
+    industryId: ''
   }
 
   changeHandler = (event) => {
@@ -63,7 +75,38 @@ export default class Company extends Component {
     });
   }
 
+
+  fetchIndustry = value => {
+    console.log('value => ', value);
+    this.lastFetchId += 1;
+    const fetchId = this.lastFetchId;
+    this.setState({ data: [], fetching: true });
+    fetch(`https://bimiscwebapi-test.azurewebsites.net/api/projects/getBuildingTypes/10/1/${value}`).then(response => response.json()).then(body => {
+      console.log('body => ', body);
+      if (fetchId !== this.lastFetchId) {
+        // for fetch callback order
+        return;
+      }
+      const data = body.data.map(user => ({
+        text: `${user.name}`,
+        value: user.id,
+      }));
+      this.setState({ data, fetching: false });
+    });
+  };
+
+  handleChangeIndustry = (key, value) => {
+    this.setState({
+      industryId: parseInt(value.value),
+      data: [],
+      fetching: false,
+    });
+  };
+
   render() {
+
+    const { Option } = Select
+    const { data, fetching } = this.state
 
     const sendCompanyData = value => {
       console.log('value sendCompanyData=> ', value);
@@ -76,7 +119,7 @@ export default class Company extends Component {
         QbId: this.state.QbId,
         WebSite: value.email,
         Phone: value.PhoneNo,
-        IndustryId: 9,
+        IndustryId: this.state.industryId,
         Active: this.state.Active
       }
       // postCompany({ Content: JSON.stringify(data.Content) }).then(res => {
@@ -144,6 +187,24 @@ export default class Company extends Component {
                           <Form.Item name="PhoneNo" rules={[{ required: true, message: "Please input your phone number!" }]}>
                             <Input onChange={(event) => this.changeHandler(event)} />
                           </Form.Item>
+                        </div>
+                        <div className="form-group">
+                          <label>Select Industry</label>
+                          <Select
+                            className="w-25"
+                            showSearch
+                            labelInValue
+                            // value={industryValue}
+                            placeholder="Search Industries"
+                            notFoundContent={fetching ? <Spin size="small" /> : null}
+                            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                            onSearch={(e) => this.fetchIndustry(e)}
+                            onChange={(e) => this.handleChangeIndustry('industryId', e)}
+                            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}>
+                            {data.map(d => (
+                              <Option key={d.value}>{d.text}</Option>
+                            ))}
+                          </Select>
                         </div>
                         <Form.List name="sight">
                           {(fields, { add, remove }) => (
