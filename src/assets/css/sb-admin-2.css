@@ -10931,3 +10931,9 @@ ul.pagination {
 .hello .ant-space-align-baseline {
   margin-right: 30px;
 }
+
+.ant-space-align-baseline {
+  -ms-flex-align: baseline;
+  align-items: baseline;
+  margin-right: 10px !important;
+}

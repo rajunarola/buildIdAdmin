@@ -10,6 +10,8 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 export default class EditCompany extends Component {
 
+  formRef = React.createRef()
+
   state = {
     Id: '',
     Name: '',
@@ -60,12 +62,9 @@ export default class EditCompany extends Component {
     });
 
     getOnlyOneCompanyAddress(companyId).then(Res => {
-      console.log('Res => ', Res);
-
       if (Res.status === 200) {
         const changedValue =
           Res.data.data.map(({
-
             address, type, city, country, postalCode, province, contactPerson, companyId, id, createdBy, modifiedBy, email, phone }) => ({
               Address: address,
               Type: type,
@@ -113,6 +112,16 @@ export default class EditCompany extends Component {
     this.setState({ Active: e });
   }
 
+  // removeCompanyAddressData = (index) => {
+  //   console.log('index => ', index);
+  //   const splicedMumber = this.state.companyAddress.splice(index, 1)
+  //   console.log('splicedMumber => ', splicedMumber);
+  //   this.setState({ companyAddress: this.state.companyAddress }, () => {
+  //     console.log('this.state.companyAddress => ', this.state.companyAddress);
+
+  //   })
+  // }
+
   render() {
 
     const updateCompany = () => {
@@ -148,19 +157,51 @@ export default class EditCompany extends Component {
     }
 
     const updateAddress = value => {
-      postCompanyAddress({ Content: JSON.stringify(this.state.companyAddress) }).then(res => {
-        if (res.data.status === true) {
-          notification.open({
-            message: 'Success',
-            description: 'Company data has been updated successfully!'
-          });
+      if (value.sights !== undefined) {
+        for (let index = 0; index < value.sights.length; index++) {
+          value.sights[index].Id = 0;
+          value.sights[index].CompanyId = this.props.match.params.id;
+          value.sights[index].RecordStatusId = 1;
+          value.sights[index].CreatedBy = 1;
+          value.sights[index].ModifiedBy = 1;
         }
-      }).catch(err => {
-        notification.open({
-          message: 'Error',
-          description: 'There was an error while updating Company Data!'
+        if (value.sights) {
+          var numbers = [...this.state.companyAddress, ...value.sights];
+        }
+        postCompanyAddress({ Content: JSON.stringify(numbers) }).then(res => {
+          if (res.data.status === true) {
+            notification.open({
+              message: 'Success',
+              description: 'Company data has been updated successfully!'
+            });
+          }
+        }).catch(err => {
+          notification.open({
+            message: 'Error',
+            description: 'There was an error while updating Company Data!'
+          });
         });
-      });
+      } else {
+        console.log('in else');
+        postCompanyAddress({ Content: JSON.stringify(this.state.companyAddress) }).then(res => {
+          if (res.data.message === "OK") {
+            notification.open({
+              message: 'Success',
+              description: 'Company data has been updated successfully!'
+            });
+          } else if (res.data.message !== "OK") {
+            notification.open({
+              message: 'Error',
+              description: `${res.data.message}`
+            });
+          }
+        }).catch(err => {
+          notification.open({
+            message: 'Error',
+            description: 'There was an error while updating Company Data!'
+          });
+        });
+      }
     }
 
     const addAddress = (values) => {
@@ -218,11 +259,9 @@ export default class EditCompany extends Component {
                         <div className="form-group">
                           <label className="formlabel">Record Status </label>
                           <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                            {
-                              this.state.changeRecordStatusId.map(tradeDetails => (
-                                <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
-                              ))
-                            }
+                            {this.state.changeRecordStatusId.map(tradeDetails => (
+                              <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
+                            ))}
                           </Select>
                         </div>
                         <div className="form-group">
@@ -247,12 +286,13 @@ export default class EditCompany extends Component {
                       </Form>
                     </div>
                   </div>
-                  {this.state.companyAddress.length > 0 ?
+                  {this.state.companyAddress && this.state.companyAddress.length > 0 ?
                     <div className="col-lg-6 hello">
-                      <div className="bg-white p-5 form-border">
-                        {this.state.companyAddress.map((data, index) => (
-                          <>
-                            <Form>
+                      <Form onFinish={updateAddress} ref={this.formRef}>
+                        <div className="bg-white p-5 form-border">
+                          {this.state.companyAddress.map((data, index) => (
+                            <>
+                              {/* <i className="fa fa-trash" onClick={() => this.removeCompanyAddressData(index)}>Delete</i> */}
                               <div className="form-group">
                                 <label className="formlabel">Address {index + 1}</label>
                                 <Form.Item>
@@ -307,13 +347,104 @@ export default class EditCompany extends Component {
                                   <Input name="ContactPerson" value={data.ContactPerson} onChange={(event) => this.changeHandlerUpdate(event, index)} />
                                 </Form.Item>
                               </div>
-                            </Form>
-                          </>
-                        ))}
-                        <Form.Item>
-                          <Button type="primary" onClick={updateAddress} className="btn btn-orange-search">Update Address</Button>
-                        </Form.Item>
-                      </div>
+                            </>
+                          ))}
+                          <Form.List name="sights">
+                            {(fields, { add, remove }) => (
+                              <>
+                                {fields.map((field, i) => (
+                                  <Space key={field.key} align="baseline">
+                                    <Form.Item noStyle
+                                      shouldUpdate={(prevValues, curValues) =>
+                                        prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
+                                      }>
+                                      {() => (
+                                        <>
+                                          <div className="form-group">
+                                            <label className="formlabel">Address</label>
+                                            <Form.Item name={[field.name, 'Address']}
+                                              fieldKey={[field.fieldKey, 'Address']}>
+                                              <Input onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Type</label>
+                                            <Form.Item
+                                              name={[field.name, 'Type']}
+                                              fieldKey={[field.fieldKey, 'Type']}>
+                                              <Input onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">City </label>
+                                            <Form.Item name={[field.name, 'City']}
+                                              fieldKey={[field.fieldKey, 'City']}>
+                                              <Input onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Province</label>
+                                            <Form.Item name={[field.name, 'Province']}
+                                              fieldKey={[field.fieldKey, 'Province']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Postal Code</label>
+                                            <Form.Item name={[field.name, 'PostalCode']}
+                                              fieldKey={[field.fieldKey, 'PostalCode']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Country</label>
+                                            <Form.Item name={[field.name, 'Country']}
+                                              fieldKey={[field.fieldKey, 'Country']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Contact Person</label>
+                                            <Form.Item name={[field.name, 'ContactPerson']}
+                                              fieldKey={[field.fieldKey, 'ContactPerson']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Email</label>
+                                            <Form.Item name={[field.name, 'Email']}
+                                              fieldKey={[field.fieldKey, 'Email']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="form-group">
+                                            <label className="formlabel">Phone</label>
+                                            <Form.Item name={[field.name, 'Phone']}
+                                              fieldKey={[field.fieldKey, 'Phone']}>
+                                              <Input onChange={(event) => this.changeHandler(event)} />
+                                            </Form.Item>
+                                          </div>
+                                          <div className="formfieldremove">
+                                            <MinusCircleOutlined onClick={() => remove(field.name)} />
+                                          </div>
+                                        </>
+                                      )}
+                                    </Form.Item>
+                                  </Space>
+                                ))}
+                                <Form.Item>
+                                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>Add Address</Button>
+                                </Form.Item>
+                              </>
+                            )}
+                          </Form.List>
+                          <Form.Item>
+                            <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Address</Button>
+                          </Form.Item>
+                          <div>
+                          </div>
+                        </div>
+                      </Form>
                     </div> :
                     <div className="col-lg-6 hello">
                       <div className="bg-white p-5 form-border">
@@ -323,8 +454,7 @@ export default class EditCompany extends Component {
                               <>
                                 {fields.map((field, i) => (
                                   <Space key={field.key} align="baseline">
-                                    <Form.Item
-                                      noStyle
+                                    <Form.Item noStyle
                                       shouldUpdate={(prevValues, curValues) =>
                                         prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
                                       }>
