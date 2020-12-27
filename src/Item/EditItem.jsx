@@ -81,9 +81,6 @@ export default class EditItem extends Component {
     changeImage = (e) => {
         this.setState({ loading: true })
         const files = Array.from(e.target.files);
-        console.log('files => ', files);
-
-        console.log('e => ', e, e.target.files[0]);
         const formData = new FormData();
         formData.append('Id', this.state.imageId)
         formData.append('ItemId', this.state.itemId)
@@ -92,21 +89,8 @@ export default class EditItem extends Component {
         formData.append('CreatedBy', parseInt(localStorage.getItem('userID')))
         formData.append('ModifiedBy', parseInt(localStorage.getItem('userID')))
         saveItemPicture(formData).then(res => {
-            console.log('response => ', res);
             if (res.data.status === true) {
                 this.setState({ loading: false });
-                // getItemPictureById(this.state.itemId).then(res => {
-                //     console.log('res getItemPicture=> ', res);
-                //     this.setState({
-                //         imageId: res.data.data.imageUrl
-                //     })
-                // }).catch(err => {
-                //     console.log('err => ', err);
-                //     notification.open({
-                //         message: 'Error',
-                //         description: 'There was an error while fetching Item picture data!'
-                //     });
-                // })
                 notification.open({
                     message: 'Success',
                     description: 'Image Changed Successfully!'

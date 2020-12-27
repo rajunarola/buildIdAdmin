@@ -5,12 +5,89 @@ import Pagination from 'react-paginate';
 import Footer from '../_layout/Footer/Footer';
 import Header from '../_layout/Header/Header';
 import SideNav from '../_layout/SideNav/SideNav';
-import { getAllItems, deleteItem, getSearchedItems } from '../Services/ItemAPI';
-import { Table, notification } from 'antd';
+import { getAllItems, deleteItem, getSearchedItems, postItem } from '../Services/ItemAPI';
+import { Table, notification, Select, Input, Popconfirm } from 'antd';
 import swal from 'sweetalert';
 import Loader from '../Loader/Loader';
+const { Option } = Select;
+const EditableCell = ({ editable, value, onChange }) => (
 
+    <div>
+        {editable
+            ? <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
+            : value
+        }
+    </div>
+);
 export default class ItemList extends Component {
+
+    constructor(props) {
+        super(props);
+        this.columns = [
+            {
+                title: "Image",
+                dataIndex: "imageUrl",
+                key: "imageUrl",
+                render: (imageUrl) => <div><img src={imageUrl} alt="Image" height="25" width="25" /></div>
+            },
+            {
+                title: "Item Name",
+                dataIndex: "name",
+                key: "name",
+                sorter: (a, b) => a.name.localeCompare(b.name),
+                render: (text, record) => this.renderColumns(text, record, 'name'),
+            },
+            {
+                title: "RecordStatus",
+                dataIndex: "recordStatus",
+                key: "recordStatus"
+            },
+            {
+                title: "Created Date",
+                dataIndex: "dateCreated",
+                key: "dateCreated",
+                sorter: (a, b) => moment(a.dateCreated).format('MM-DD-YYYY') - moment(b.dateCreated).format('MM-DD-YYYY'),
+                render: (dateCreated) => moment(dateCreated).format('MM-DD-YYYY')
+            },
+            {
+                title: "Edit",
+                dataIndex: "edit",
+                key: "edit",
+                render: (text, record) => (
+                    <td><button className="btn btn-primary" onClick={(e) => this.editItem(record.id)}>Edit</button></td>
+                )
+            },
+            {
+                title: "Delete",
+                dataIndex: "delete",
+                key: "delete",
+                render: (text, record) => (
+                    <td><button className="btn btn-danger" onClick={(e) => this.deleteItem(record.id)}>Delete</button></td>
+                )
+            },
+            {
+                title: 'Inline Edit',
+                dataIndex: 'operation',
+                render: (text, record) => {
+                    const { editable } = record;
+                    return (
+                        <div className="editable-row-operations">
+                            {
+                                editable ?
+                                    <span>
+                                        <a onClick={() => this.save(record.key)}>Save</a>
+                                        <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
+                                            <a>Cancel</a>
+                                        </Popconfirm>
+                                    </span>
+                                    : <a onClick={() => this.edit(record.key)}>Edit</a>
+                            }
+                        </div>
+                    );
+                }
+            }
+        ]
+    }
 
     state = {
         itemData: [],
@@ -24,50 +101,6 @@ export default class ItemList extends Component {
     componentDidMount() {
         this.setState({ loading: true })
     }
-
-
-    columns = [
-        {
-            title: "Image",
-            dataIndex: "imageUrl",
-            key: "imageUrl",
-            render: (imageUrl) => <div><img src={imageUrl} alt="Image" height="25" width="25" /></div>
-        },
-        {
-            title: "Item Name",
-            dataIndex: "name",
-            key: "name",
-            sorter: (a, b) => a.name.localeCompare(b.name)
-        },
-        {
-            title: "RecordStatus",
-            dataIndex: "recordStatus",
-            key: "recordStatus"
-        },
-        {
-            title: "Created Date",
-            dataIndex: "dateCreated",
-            key: "dateCreated",
-            sorter: (a, b) => moment(a.dateCreated).format('MM-DD-YYYY') - moment(b.dateCreated).format('MM-DD-YYYY'),
-            render: (dateCreated) => moment(dateCreated).format('MM-DD-YYYY')
-        },
-        {
-            title: "Edit",
-            dataIndex: "edit",
-            key: "edit",
-            render: (text, record) => (
-                <td><button className="btn btn-primary" onClick={(e) => this.editItem(record.id)}>Edit</button></td>
-            )
-        },
-        {
-            title: "Delete",
-            dataIndex: "delete",
-            key: "delete",
-            render: (text, record) => (
-                <td><button className="btn btn-danger" onClick={(e) => this.deleteItem(record.id)}>Delete</button></td>
-            )
-        }
-    ]
 
     editItem(id) {
         this.props.history.push(`/edit-item/${id}`)
@@ -134,14 +167,8 @@ export default class ItemList extends Component {
     }
 
     getSearchStringData(e) {
-        console.log('e => ', e.target.value);
-        console.log(' this.state.currentPage=> ', this.state.currentPage);
-
         getSearchedItems(this.state.currentPage, e.target.value).then(res => {
-            console.log('res => ', res);
             let pageno = this.state.currentPage;
-            console.log('pageno => ', pageno);
-
             this.setState({ itemData: res.data.data, total: res.data.message });
             let pageCount = this.state.total / this.state.limit
             this.setState({ pageCount: pageCount, currentPage: pageno })
@@ -151,6 +178,83 @@ export default class ItemList extends Component {
                 description: 'There was an error while searching through company data!'
             });
         })
+    }
+
+    renderColumns(text, record, column, e) {
+        console.log('text,record,column => ', text, record.recordStatus);
+        if (column === "recordStatus") {
+            console.log('true', e);
+        }
+        return (
+            <EditableCell
+                editable={record.editable}
+                value={text}
+                onChange={value => this.handleChange(value, record.key, column)}
+            />
+        );
+    }
+
+    handleChange(value, key, column) {
+        const newData = [...this.state.itemData];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            target[column] = value;
+            this.setState({ itemData: newData });
+        }
+    }
+
+    edit(key) {
+        const newData = [...this.state.itemData];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            target.editable = true;
+            this.setState({ itemData: newData });
+        }
+    }
+
+    save(key) {
+        const newData = [...this.state.itemData];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            delete target.editable;
+            this.setState({ itemData: newData }, () => {
+                this.cacheData = newData.map(item => ({ ...item }));
+                const data = {
+                    Content: [
+                        {
+                            Id: target.id,
+                            Name: target.name,
+                            RecordStatusId: target.recordStatusId,
+                            CreatedBy: parseInt(localStorage.getItem('userID')),
+                            ModifiedBy: parseInt(localStorage.getItem('userID'))
+                        }
+                    ]
+                }
+                postItem({ Content: JSON.stringify(data.Content) }).then(res => {
+                    if (res.data.status === true) {
+                        notification.open({
+                            message: 'Success',
+                            description: 'Item successfully updated!'
+                        });
+                    }
+                }).catch(err => {
+                    notification.open({
+                        message: 'Error',
+                        description: 'There was an error while updating Item data!'
+                    });
+                });
+            });
+        }
+    }
+
+    cancel(key) {
+        const newData = [...this.state.itemData];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            Object.assign(target, newData.filter(item => key === item.key)[0]);
+            delete target.editable;
+            this.setState({ itemData: newData });
+        }
     }
 
     render() {

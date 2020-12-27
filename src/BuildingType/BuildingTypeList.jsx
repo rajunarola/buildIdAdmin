@@ -2,15 +2,106 @@ import React, { Component } from 'react'
 import swal from 'sweetalert';
 import Pagination from 'react-paginate';
 import { Link } from 'react-router-dom';
-import { Table, notification } from 'antd';
+import { Table, notification, Input, Popconfirm, Select } from 'antd';
 import Footer from '../_layout/Footer/Footer';
 import Header from '../_layout/Header/Header';
 import SideNav from '../_layout/SideNav/SideNav';
-import { getAllBuildingType, deleteBuildingType, getSearchedBuildingType } from '../Services/BuildingType';
+import { getAllBuildingType, deleteBuildingType, getSearchedBuildingType, postBuildingType } from '../Services/BuildingType';
 import Loader from '../Loader/Loader';
+const buildingType = [];
+const { Option } = Select;
+const EditableCell = ({ editable, value, onChange }) => (
 
+    <div>
+        {console.log('editable => ', editable)}
+        {console.log('value => ', value)}
+        {/* {console.log('editable => ', editable)} */}
+        {editable
+            ? <Input style={{ margin: '-5px 0' }} value={value} onChange={e => onChange(e.target.value)} />
+            : value
+        }
+    </div>
+);
 export default class BuildingTypeList extends Component {
 
+    constructor(props) {
+        super(props);
+        this.columns = [
+            {
+                title: "Building Name",
+                dataIndex: "name",
+                key: "name",
+                sorter: (a, b) => a.name.localeCompare(b.name),
+                render: (text, record) => this.renderColumns(text, record, 'name'),
+            },
+            {
+                title: "Created By",
+                dataIndex: "createdByUser",
+                key: "createdByUser",
+                sorter: (a, b) => a.createdByUser.localeCompare(b.createdByUser)
+            },
+            {
+                title: "Record Status",
+                dataIndex: "recordStatus",
+                key: "recordStatus",
+                render: (text, record) => {
+                    const { editable } = record;
+                    return (
+                        <div className="editable-row-operations">
+                            {
+                                editable ?
+                                    <div>
+                                        <Select defaultValue={text} onSelect={(e) => this.renderColumns(text, record, 'recordStatus')}>
+                                            <Option key={1} value={1}>New</Option>
+                                            <Option key={2} value={2}>Visible</Option>
+                                            <Option key={3} value={3}>Not Visible</Option>
+                                        </Select>
+                                    </div> :
+                                    <div>{text}</div>
+                            }
+                        </div>
+                    )
+                }
+            },
+            {
+                title: "Edit",
+                dataIndex: "edit",
+                key: "edit",
+                render: (text, record) => (
+                    <td><button className="btn btn-primary" onClick={(e) => this.editBuildingType(record.id)}>Edit</button></td>
+                )
+            },
+            {
+                title: "Delete",
+                dataIndex: "delete",
+                key: "delete",
+                render: (text, record) => (
+                    <td><button className="btn btn-danger" onClick={(e) => this.deleteBuildingType(record.id)}>Delete</button></td>
+                )
+            },
+            {
+                title: 'Inline Edit',
+                dataIndex: 'operation',
+                render: (text, record) => {
+                    const { editable } = record;
+                    return (
+                        <div className="editable-row-operations">
+                            {
+                                editable ?
+                                    <span>
+                                        <a onClick={() => this.save(record.key)}>Save</a>
+                                        <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
+                                            <a>Cancel</a>
+                                        </Popconfirm>
+                                    </span>
+                                    : <a onClick={() => this.edit(record.key)}>Edit</a>
+                            }
+                        </div>
+                    );
+                }
+            }]
+        // this.state = { buildingType };
+    }
     state = {
         buildingType: [],
         limit: 10,
@@ -24,52 +115,27 @@ export default class BuildingTypeList extends Component {
         this.setState({ loading: true });
     }
 
-    columns = [
-        {
-            title: "Building Name",
-            dataIndex: "name",
-            key: "name",
-            sorter: (a, b) => a.name.localeCompare(b.name)
-        },
-        {
-            title: "Created By",
-            dataIndex: "createdByUser",
-            key: "createdByUser",
-            sorter: (a, b) => a.createdByUser.localeCompare(b.createdByUser)
-        },
-        {
-            title: "Record Status",
-            dataIndex: "recordStatus",
-            key: "recordStatus"
-        },
-        {
-            title: "Edit",
-            dataIndex: "edit",
-            key: "edit",
-            render: (text, record) => (
-                <td><button className="btn btn-primary" onClick={(e) => this.editBuildingType(record.id)}>Edit</button></td>
-            )
-        },
-        {
-            title: "Delete",
-            dataIndex: "delete",
-            key: "delete",
-            render: (text, record) => (
-                <td><button className="btn btn-danger" onClick={(e) => this.deleteBuildingType(record.id)}>Delete</button></td>
-            )
-        }
-    ]
-
     editBuildingType(id) {
         this.props.history.push(`/edit-building-type/${id}`)
     }
 
     handlePageClick = page => {
+        console.log('page => ', page);
+
         const pageno = page.selected + 1;
+        console.log('pageno => ', pageno);
+
+
+
         getAllBuildingType(pageno).then(res => {
-            this.setState({ buildingType: res.data.data, total: res.data.message, loading: false });
-            let pageCount = this.state.total / this.state.limit
-            this.setState({ pageCount: pageCount, currentPage: pageno })
+            console.log('res.data.data => ', res.data.data);
+
+            this.setState({ buildingType: res.data.data, total: res.data.message, loading: false }, () => {
+                // console.log('this.cacheData => ', this.cacheData);
+                // this.cacheData = this.state.buildingType.map(item => ({ ...item }));
+                let pageCount = this.state.total / this.state.limit
+                this.setState({ pageCount: pageCount, currentPage: pageno })
+            });
         }).catch(err => {
             notification.open({
                 message: 'Error',
@@ -123,6 +189,97 @@ export default class BuildingTypeList extends Component {
                 description: 'There was an error while searching building type!'
             });
         })
+    }
+
+    renderColumns(text, record, column) {
+        // console.log('text,record,column => ', text, record.recordStatus);
+        // if (column === "recordStatus") {
+        //     console.log('true');
+        // }
+        return (
+            <EditableCell
+                editable={record.editable}
+                value={text}
+                onChange={value => this.handleChange(value, record.key, column)}
+            />
+        );
+    }
+
+    handleChange(value, key, column) {
+        console.log('handleChangecolumn => ', value, column);
+
+        const newData = [...this.state.buildingType];
+        const target = newData.filter(item => key === item.key)[0];
+        console.log('handleChangetarget => ', target);
+
+        if (target) {
+            target[column] = value;
+            this.setState({ buildingType: newData });
+        }
+    }
+
+    edit(key) {
+        const newData = [...this.state.buildingType];
+        console.log('newData => ', newData);
+
+        const target = newData.filter(item => key === item.key)[0];
+        console.log('target => ', target);
+
+        if (target) {
+            target.editable = true;
+            this.setState({ buildingType: newData });
+        }
+    }
+
+    save(key) {
+        const newData = [...this.state.buildingType];
+        const target = newData.filter(item => key === item.key)[0];
+        console.log('target => ', target);
+
+        if (target) {
+            delete target.editable;
+            this.setState({ buildingType: newData }, () => {
+                this.cacheData = newData.map(item => ({ ...item }));
+                console.log('savenewData => ', newData);
+                const data = {
+                    Content: [
+                        {
+                            Id: target.id,
+                            Name: target.name,
+                            RecordStatus: target.recordStatus,
+                            RecordStatusId: target.recordStatusId,
+                            CreatedBy: parseInt(localStorage.getItem('userID')),
+                            ModifiedBy: parseInt(localStorage.getItem('userID')),
+                        }
+                    ]
+                }
+                console.log('data => ', data);
+                // postBuildingType({ Content: JSON.stringify(data.Content) }).then(res => {
+                //     console.log('res => ', res);
+                //     if (res.data.status === true) {
+                //         notification.open({
+                //             message: 'Success',
+                //             description: 'Building Type successfully updated!'
+                //         });
+                //     }
+                // }).catch(err => {
+                //     notification.open({
+                //         message: 'Error',
+                //         description: 'There was an error while updating building type!'
+                //     });
+                // });
+            });
+        }
+    }
+
+    cancel(key) {
+        const newData = [...this.state.buildingType];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            Object.assign(target, newData.filter(item => key === item.key)[0]);
+            delete target.editable;
+            this.setState({ buildingType: newData });
+        }
     }
 
     render() {
