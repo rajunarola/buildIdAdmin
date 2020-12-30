@@ -1,7 +1,7 @@
 import React from 'react';
 import { getOnlyOneCompanyAddress, getCompanyById, getRecordStatusForCompanies, postCompany, deleteCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI';
 import { Form, Input, notification, Button, Checkbox, Select } from 'antd';
-// import { Footer, Header } from 'antd/lib/layout/layout';
+import Loader from '../Loader/Loader';
 import SideNav from '../_layout/SideNav/SideNav';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -154,10 +154,12 @@ class ProductTable extends React.Component {
     Active: false,
     changeRecordStatusId: [],
     companyAddress: [],
-    companyData: []
+    companyData: [],
+    loading: false
   }
 
   componentDidMount() {
+    this.setState({ loading: true })
     getCompanyById(this.props.params).then(res => {
       if (res.status === 200) {
         this.setState({
@@ -171,12 +173,12 @@ class ProductTable extends React.Component {
           DateCreated: res.data.data.dateCreated,
           Active: res.data.data.active,
           ModifiedBy: res.data.data.modifiedBy,
-          DateModified: res.data.data.dateModified
-        }, () => {
-          console.log('this.state.companyData => ', this.state.companyData);
+          DateModified: res.data.data.dateModified,
+          loading: false
         });
       }
     }).catch(err => {
+      this.setState({ loadig: false })
       notification.open({
         message: 'Error',
         description: 'There was an error while fetching company data!'
@@ -274,101 +276,105 @@ class ProductTable extends React.Component {
     return (
 
       <div className="d-flex">
-        <SideNav />
-        <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-          <div className="content">
-            <Header />
-          </div>
-          <div className="container-fluid">
-            <div class="main-title-lg mb-5 d-flex justify-content-between">
-              <h1 class="h3 text-gray-800">Edit Company</h1>
-              <Link to="/company-list" class="btn btn-orange-search">View Company List</Link>
+        {this.state.loading ? <Loader /> : <>
+          <SideNav />
+          <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
+            <div className="content">
+              <Header />
             </div>
-            {/* <div class="card shadow mb-4">
+            <div className="container-fluid">
+              <div class="main-title-lg mb-5 d-flex justify-content-between">
+                <h1 class="h3 text-gray-800">Edit Company</h1>
+                <Link to="/company-list" class="btn btn-orange-search">View Company List</Link>
+              </div>
+              {/* <div class="card shadow mb-4">
               <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold txt-orange">Edit List </h6> */}
-            <div className="trade-form-wrap">
-              <div className="row mt-5">
-                <div className="col-lg-6">
-                  <div className="bg-white p-5 form-border">
-                    <Form onFinish={updateCompany}>
-                      <div className="form-group">
-                        <label>Company Name</label>
+              <div className="trade-form-wrap">
+                <div className="row mt-5">
+                  <div className="col-lg-6">
+                    <div className="bg-white p-5 form-border">
+                      <Form onFinish={updateCompany}>
+                        <div className="form-group">
+                          <label>Company Name</label>
+                          <Form.Item>
+                            <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                          </Form.Item>
+                        </div>
+                        <div className="form-group">
+                          <label className="formlabel">Record Status </label>
+                          <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
+                            {this.state.changeRecordStatusId.map(tradeDetails => (
+                              <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
+                            ))}
+                          </Select>
+                        </div>
+                        <div className="form-group">
+                          <label>Website</label>
+                          <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
+                            <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
+                          </Form.Item>
+                        </div>
+                        <div className="form-group">
+                          <label>Phone Number</label>
+                          <Form.Item>
+                            <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
+                          </Form.Item>
+                        </div>
+                        <div className="form-check mb-3 check_custom">
+                          <Form.Item className="m-0">
+                            <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
+                          </Form.Item>
+                          <label className="form-check-label ml-2">Active</label>
+                        </div>
                         <Form.Item>
-                          <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                          <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
                         </Form.Item>
-                      </div>
-                      <div className="form-group">
-                        <label className="formlabel">Record Status </label>
-                        <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                          {this.state.changeRecordStatusId.map(tradeDetails => (
-                            <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
-                          ))}
-                        </Select>
-                      </div>
-                      <div className="form-group">
-                        <label>Website</label>
-                        <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
-                          <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
-                        </Form.Item>
-                      </div>
-                      <div className="form-group">
-                        <label>Phone Number</label>
-                        <Form.Item>
-                          <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
-                        </Form.Item>
-                      </div>
-                      <div className="form-check mb-3 check_custom">
-                        <Form.Item className="m-0">
-                          <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
-                        </Form.Item>
-                        <label className="form-check-label ml-2">Active</label>
-                      </div>
-                      <Form.Item>
-                        <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
-                      </Form.Item>
-                    </Form>
+                      </Form>
+                    </div>
+                  </div>
+                  <div className="mt-3 col-md-12 d-flex mb-3">
+                    <Button type="primay" className="btn btn-orange-search" onClick={this.props.onRowAdd}>Add</Button>
+                  </div>
+                  <div className="col-md-12 custom_table">
+
+                    <table className="table table-bordered table-responsive">
+                      <thead>
+                        <tr>
+                          <th>Address</th>
+                          <th>City</th>
+                          <th>Country</th>
+                          <th>Postal Code</th>
+                          <th>Province</th>
+                          <th>Contact Person</th>
+                          <th>Email</th>
+                          <th>Phone</th>
+                          <th>Type</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {product}
+                      </tbody>
+                    </table>
+
+                  </div>
+                  <div className="mt-3 col-md-12 d-flex">
+                    <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
                   </div>
                 </div>
-                <div className="mt-3 col-md-12 d-flex justify-content-lg-end">
-                  <Button type="primay" className="btn btn-orange-search" onClick={this.props.onRowAdd}>Add</Button>
-                </div>
-                <div className="col-md-12 custom_table">
 
-                  <table className="table table-bordered table-responsive">
-                    <thead>
-                      <tr>
-                        <th>Address</th>
-                        <th>City</th>
-                        <th>Country</th>
-                        <th>Postal Code</th>
-                        <th>Province</th>
-                        <th>Contact Person</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Type</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {product}
-                    </tbody>
-                  </table>
-
-                </div>
-                <div className="mt-3 col-md-12 d-flex justify-content-lg-end">
-                  <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
-                </div>
-              </div>
-
-              {/* </div>
+                {/* </div>
               </div> */}
+              </div>
             </div>
-          </div>
-          <Footer />
-        </div>
-      </div>
+            <Footer />
 
+          </div>
+        </>
+        }
+
+      </div>
     );
 
   }
