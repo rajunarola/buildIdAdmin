@@ -1,16 +1,20 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { getOnlyOneCompanyAddress, getCompanyById, getRecordStatusForCompanies, postCompany, deleteCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI';
+import { Form, Input, notification, Button, Checkbox, Select } from 'antd';
+// import { Footer, Header } from 'antd/lib/layout/layout';
+import SideNav from '../_layout/SideNav/SideNav';
+import { Link } from 'react-router-dom';
+import moment from 'moment';
 import Footer from '../_layout/Footer/Footer'
 import Header from '../_layout/Header/Header'
-import SideNav from '../_layout/SideNav/SideNav'
-import { Form, Input, Select, notification, Button, Checkbox, Space } from 'antd';
-import moment from 'moment';
-import { getCompanyById, getRecordStatusForCompanies, postCompany, getOnlyOneCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+export default class Products extends React.Component {
 
-export default class EditCompany extends Component {
-
-  formRef = React.createRef()
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.state.filterText = "";
+    this.state.params = parseInt(this.props.match.params.id);
+  }
 
   state = {
     Id: '',
@@ -23,52 +27,19 @@ export default class EditCompany extends Component {
     DateModified: '',
     Active: false,
     changeRecordStatusId: [],
-    companyAddress: []
+    companyAddress: [],
+    companyData: []
   }
 
-  componentDidMount() {
-    const companyId = this.props.match.params.id;
-    getCompanyById(companyId).then(res => {
-      if (res.status === 200) {
-        this.setState({
-          Id: res.data.data.id,
-          Name: res.data.data.name,
-          RecordStatusId: res.data.data.recordStatusId,
-          WebSite: res.data.data.webSite,
-          Phone: res.data.data.phone,
-          CreatedBy: res.data.data.createdBy,
-          DateCreated: res.data.data.dateCreated,
-          Active: res.data.data.active,
-          ModifiedBy: res.data.data.modifiedBy,
-          DateModified: res.data.data.dateModified
-        });
-      }
-    }).catch(err => {
-      notification.open({
-        message: 'Error',
-        description: 'There was an error while fetching company data!'
-      });
-    });
-
-    getRecordStatusForCompanies().then(res => {
-      if (res.status === 200) {
-        this.setState({ changeRecordStatusId: res.data.data })
-      }
-    }).catch(err => {
-      notification.open({
-        message: 'Error',
-        description: 'There was an error while fetching record status for company data!'
-      });
-    });
-
-    getOnlyOneCompanyAddress(companyId).then(Res => {
+  async componentDidMount() {
+    await getOnlyOneCompanyAddress(this.props.match.params.id).then(Res => {
       if (Res.status === 200) {
         const changedValue =
           Res.data.data.map(({
             address, type, city, country, postalCode, province, contactPerson, companyId, id, createdBy, modifiedBy, email, phone }) => ({
               Address: address,
               Type: type,
-              Id: id,
+              Id: JSON.stringify(id),
               CompanyId: companyId,
               City: city,
               Country: country,
@@ -90,39 +61,183 @@ export default class EditCompany extends Component {
     })
   }
 
-  handleChange = (value) => {
-    this.setState({ RecordStatusId: value });
+  handleUserInput(filterText) {
+    this.setState({ filterText: filterText });
+  };
+
+  handleRowDel(product) {
+    var index = this.state.companyAddress.indexOf(product);
+    this.state.companyAddress.splice(index, 1);
+    this.setState(this.state.companyAddress);
+  };
+
+  handleAddEvent(evt) {
+    var id = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
+    var product = {
+      Id: id,
+      Address: "",
+      City: "",
+      Country: "",
+      PostalCode: "",
+      Province: "",
+      ContactPerson: "",
+      Email: "",
+      Phone: "",
+      Type: "",
+      CreatedBy: parseInt(localStorage.getItem('userID')),
+      ModifiedBy: parseInt(localStorage.getItem('userID')),
+      CompanyId: parseInt(this.props.match.params.id)
+    }
+    this.state.companyAddress.push(product);
+    this.setState(this.state.companyAddress);
+  }
+
+  handleProductTable(evt) {
+    console.log('evt => ', evt);
+
+    var item = {
+      id: evt.target.id,
+      name: evt.target.name,
+      value: evt.target.value
+    }; var products = this.state.companyAddress.slice();
+
+    let newProducts = products.map(product => {
+      for (var key in product) {
+        if (key === item.name && product.Id === item.id) {
+          console.log('companyAddresstrue');
+          product[key] = item.value;
+        }
+      }
+      return product;
+    })
+    this.setState({ companyAddress: newProducts });
+
+  };
+
+  render() {
+
+    return (
+      <div>
+        {/* <SearchBar filterText={this.state.filterText} onUserInput={this.handleUserInput.bind(this)} /> */}
+        <ProductTable onProductTableUpdate={this.handleProductTable.bind(this)} onRowAdd={this.handleAddEvent.bind(this)} products={this.state.companyAddress} filterText={this.state.filterText} params={this.state.params} />
+      </div>
+    );
+
+  }
+
+}
+class SearchBar extends React.Component {
+  handleChange() {
+    this.props.onUserInput(this.refs.filterTextInput.value);
+  }
+  render() {
+    return (
+      <div>
+        <input type="text" placeholder="Search..." value={this.props.filterText} ref="filterTextInput" onChange={this.handleChange.bind(this)} />
+      </div>
+
+    );
+  }
+}
+
+class ProductTable extends React.Component {
+
+  state = {
+    Id: '',
+    Name: '',
+    RecordStatusId: '',
+    WebSite: '',
+    CreatedBy: '',
+    DateCreated: '',
+    ModifiedBy: '',
+    DateModified: '',
+    Active: false,
+    changeRecordStatusId: [],
+    companyAddress: [],
+    companyData: []
+  }
+
+  componentDidMount() {
+    getCompanyById(this.props.params).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          companyData: res.data.data,
+          Id: res.data.data.id,
+          Name: res.data.data.name,
+          RecordStatusId: res.data.data.recordStatusId,
+          WebSite: res.data.data.webSite,
+          Phone: res.data.data.phone,
+          CreatedBy: res.data.data.createdBy,
+          DateCreated: res.data.data.dateCreated,
+          Active: res.data.data.active,
+          ModifiedBy: res.data.data.modifiedBy,
+          DateModified: res.data.data.dateModified
+        }, () => {
+          console.log('this.state.companyData => ', this.state.companyData);
+        });
+      }
+    }).catch(err => {
+      notification.open({
+        message: 'Error',
+        description: 'There was an error while fetching company data!'
+      });
+    });
+
+    getRecordStatusForCompanies().then(res => {
+      if (res.status === 200) {
+        this.setState({ changeRecordStatusId: res.data.data })
+      }
+    }).catch(err => {
+      notification.open({
+        message: 'Error',
+        description: 'There was an error while fetching record status for company data!'
+      });
+    });
+  }
+
+
+  updateCompanyAddress = () => {
+    console.log('this.props => ', this.props);
+    // this.props.products[CreatedBy] = this.props.params
+    // this.props.products[ModifiedBy] = this.props.params
+    console.log('this.state.companyAddress => ', this.state.companyAddress);
+
+    postCompanyAddress({ Content: JSON.stringify(this.props.products) }).then(res => {
+      if (res.data.message === "OK") {
+        notification.open({
+          message: 'Success',
+          description: 'Company Address successfully updated!'
+        })
+      } else if (res.data.message !== "OK") {
+        notification.open({
+          message: 'Error',
+          description: 'A record with the same data already exists!'
+        })
+      }
+    }).catch(Err => {
+      notification.open({
+        message: 'Error',
+        description: 'There was an error while updating a company address!'
+      })
+    })
   }
 
   changeHandler = (event) => {
     this.setState({
       [event.target.name]: event.target.value
-    });
+    })
   }
-
-  changeHandlerUpdate = (event, index) => {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
-    var data = [...this.state.companyAddress];
-    data[index][event.target.name] = event.target.value;
-  }
-
-  getCheckBoxValue = (e) => {
-    this.setState({ Active: e });
-  }
-
-  // removeCompanyAddressData = (index) => {
-  //   console.log('index => ', index);
-  //   const splicedMumber = this.state.companyAddress.splice(index, 1)
-  //   console.log('splicedMumber => ', splicedMumber);
-  //   this.setState({ companyAddress: this.state.companyAddress }, () => {
-  //     console.log('this.state.companyAddress => ', this.state.companyAddress);
-
-  //   })
-  // }
 
   render() {
+
+    var onProductTableUpdate = this.props.onProductTableUpdate;
+    var filterText = this.props.filterText;
+    let product = this.props.products && this.props.products.map(function (product) {
+      if (product.Address.indexOf(filterText) === -1) {
+        return;
+      }
+      return (<ProductRow onProductTableUpdate={onProductTableUpdate} product={product} key={product.Id} />)
+    });
 
     const updateCompany = () => {
       const data = {
@@ -156,404 +271,238 @@ export default class EditCompany extends Component {
       });
     }
 
-    const updateAddress = value => {
-      if (value.sights !== undefined) {
-        for (let index = 0; index < value.sights.length; index++) {
-          value.sights[index].Id = 0;
-          value.sights[index].CompanyId = this.props.match.params.id;
-          value.sights[index].RecordStatusId = 1;
-          value.sights[index].CreatedBy = 1;
-          value.sights[index].ModifiedBy = 1;
-        }
-        if (value.sights) {
-          var numbers = [...this.state.companyAddress, ...value.sights];
-        }
-        postCompanyAddress({ Content: JSON.stringify(numbers) }).then(res => {
-          if (res.data.status === true) {
-            notification.open({
-              message: 'Success',
-              description: 'Company data has been updated successfully!'
-            });
-          }
-        }).catch(err => {
-          notification.open({
-            message: 'Error',
-            description: 'There was an error while updating Company Data!'
-          });
-        });
-      } else {
-        console.log('in else');
-        postCompanyAddress({ Content: JSON.stringify(this.state.companyAddress) }).then(res => {
-          if (res.data.message === "OK") {
-            notification.open({
-              message: 'Success',
-              description: 'Company data has been updated successfully!'
-            });
-          } else if (res.data.message !== "OK") {
-            notification.open({
-              message: 'Error',
-              description: `${res.data.message}`
-            });
-          }
-        }).catch(err => {
-          notification.open({
-            message: 'Error',
-            description: 'There was an error while updating Company Data!'
-          });
-        });
-      }
-    }
-
-    const addAddress = (values) => {
-      for (let index = 0; index < values.sights.length; index++) {
-        values.sights[index].Id = 0;
-        values.sights[index].CompanyId = this.props.match.params.id;
-        values.sights[index].RecordStatusId = 1;
-        values.sights[index].CreatedBy = 1;
-        values.sights[index].ModifiedBy = 1;
-      }
-      postCompanyAddress({ Content: JSON.stringify(values.sights) }).then(res => {
-        if (res.data.data === -1) {
-          notification.open({
-            message: 'Error',
-            description: 'A company with same data address exist already!'
-          });
-        } else if (res.data.data !== -1) {
-          notification.open({
-            message: 'Success',
-            description: 'Company data has been added successfully!'
-          });
-        }
-      }).catch(err => {
-        notification.open({
-          message: 'Error',
-          description: 'There was an error while adding Company Data!'
-        });
-      });
-    }
-
     return (
-      <div>
-        <div className="d-flex">
-          <SideNav />
-          <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-            <div className="content">
-              <Header />
+
+      <div className="d-flex">
+        <SideNav />
+        <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
+          <div className="content">
+            <Header />
+          </div>
+          <div className="container-fluid">
+            <div class="main-title-lg mb-5 d-flex justify-content-between">
+              <h1 class="h3 text-gray-800">Edit Company</h1>
+              <Link to="/company-list" class="btn btn-orange-search">View Company List</Link>
             </div>
-            <div className="container-fluid">
-              <div className="main-title-lg mb-5 d-flex justify-content-between">
-                <h1 className="h3 text-gray-800">Edit Company</h1>
-                <Link to="/company-list" className="btn btn-orange-search">View Company List</Link>
-              </div>
-              <div className="trade-form-wrap">
-                <div className="row mt-5">
-                  <div className="col-lg-6">
-                    <div className="bg-white p-5 form-border">
-                      <Form onFinish={updateCompany}>
-                        <div className="form-group">
-                          <label>Company Name</label>
-                          <Form.Item>
-                            <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
-                          </Form.Item>
-                        </div>
-                        <div className="form-group">
-                          <label className="formlabel">Record Status </label>
-                          <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                            {this.state.changeRecordStatusId.map(tradeDetails => (
-                              <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
-                            ))}
-                          </Select>
-                        </div>
-                        <div className="form-group">
-                          <label>Website</label>
-                          <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
-                            <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
-                          </Form.Item>
-                        </div>
-                        <div className="form-group">
-                          <label>Phone Number</label>
-                          <Form.Item>
-                            <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
-                          </Form.Item>
-                        </div>
-                        <div className="form-check mb-3">
-                          <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
-                          <label className="form-check-label mr-5">Active</label>
-                        </div>
+            {/* <div class="card shadow mb-4">
+              <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold txt-orange">Edit List </h6> */}
+            <div className="trade-form-wrap">
+              <div className="row mt-5">
+                <div className="col-lg-6">
+                  <div className="bg-white p-5 form-border">
+                    <Form onFinish={updateCompany}>
+                      <div className="form-group">
+                        <label>Company Name</label>
                         <Form.Item>
-                          <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
+                          <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
                         </Form.Item>
-                      </Form>
-                    </div>
-                  </div>
-                  {this.state.companyAddress && this.state.companyAddress.length > 0 ?
-                    <div className="col-lg-6 hello">
-                      <Form onFinish={updateAddress} ref={this.formRef}>
-                        <div className="bg-white p-5 form-border">
-                          {this.state.companyAddress.map((data, index) => (
-                            <>
-                              {/* <i className="fa fa-trash" onClick={() => this.removeCompanyAddressData(index)}>Delete</i> */}
-                              <div className="form-group">
-                                <label className="formlabel">Address {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Address" value={data.Address} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group d-none">
-                                <label className="formlabel">Company Id {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Address" value={data.CompanyId} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group d-none">
-                                <label className="formlabel"> Id {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Id" value={data.Id} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">Type {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Type" value={data.Type} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">City {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="City" value={data.City} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">Province {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Province" value={data.Province} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">Postal Code {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="PostalCode" value={data.PostalCode} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">Country {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="Country" value={data.Country} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                              <div className="form-group">
-                                <label className="formlabel">Contact Person {index + 1}</label>
-                                <Form.Item>
-                                  <Input name="ContactPerson" value={data.ContactPerson} onChange={(event) => this.changeHandlerUpdate(event, index)} />
-                                </Form.Item>
-                              </div>
-                            </>
-                          ))}
-                          <Form.List name="sights">
-                            {(fields, { add, remove }) => (
-                              <>
-                                {fields.map((field, i) => (
-                                  <Space key={field.key} align="baseline">
-                                    <Form.Item noStyle
-                                      shouldUpdate={(prevValues, curValues) =>
-                                        prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
-                                      }>
-                                      {() => (
-                                        <>
-                                          <div className="form-group">
-                                            <label className="formlabel">Address</label>
-                                            <Form.Item name={[field.name, 'Address']}
-                                              fieldKey={[field.fieldKey, 'Address']}>
-                                              <Input onChange={(e) => this.changeHandler(e)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Type</label>
-                                            <Form.Item
-                                              name={[field.name, 'Type']}
-                                              fieldKey={[field.fieldKey, 'Type']}>
-                                              <Input onChange={(e) => this.changeHandler(e)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">City </label>
-                                            <Form.Item name={[field.name, 'City']}
-                                              fieldKey={[field.fieldKey, 'City']}>
-                                              <Input onChange={(e) => this.changeHandler(e)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Province</label>
-                                            <Form.Item name={[field.name, 'Province']}
-                                              fieldKey={[field.fieldKey, 'Province']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Postal Code</label>
-                                            <Form.Item name={[field.name, 'PostalCode']}
-                                              fieldKey={[field.fieldKey, 'PostalCode']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Country</label>
-                                            <Form.Item name={[field.name, 'Country']}
-                                              fieldKey={[field.fieldKey, 'Country']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Contact Person</label>
-                                            <Form.Item name={[field.name, 'ContactPerson']}
-                                              fieldKey={[field.fieldKey, 'ContactPerson']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Email</label>
-                                            <Form.Item name={[field.name, 'Email']}
-                                              fieldKey={[field.fieldKey, 'Email']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Phone</label>
-                                            <Form.Item name={[field.name, 'Phone']}
-                                              fieldKey={[field.fieldKey, 'Phone']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="formfieldremove">
-                                            <MinusCircleOutlined onClick={() => remove(field.name)} />
-                                          </div>
-                                        </>
-                                      )}
-                                    </Form.Item>
-                                  </Space>
-                                ))}
-                                <Form.Item>
-                                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>Add Address</Button>
-                                </Form.Item>
-                              </>
-                            )}
-                          </Form.List>
-                          <Form.Item>
-                            <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Address</Button>
-                          </Form.Item>
-                          <div>
-                          </div>
-                        </div>
-                      </Form>
-                    </div> :
-                    <div className="col-lg-6 hello">
-                      <div className="bg-white p-5 form-border">
-                        <Form onFinish={addAddress}>
-                          <Form.List name="sights">
-                            {(fields, { add, remove }) => (
-                              <>
-                                {fields.map((field, i) => (
-                                  <Space key={field.key} align="baseline">
-                                    <Form.Item noStyle
-                                      shouldUpdate={(prevValues, curValues) =>
-                                        prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
-                                      }>
-                                      {() => (
-                                        <>
-                                          <div className="form-group">
-                                            <label className="formlabel">Address {i + 1}</label>
-                                            <Form.Item name={[field.name, 'Address']}
-                                              fieldKey={[field.fieldKey, 'Address']}>
-                                              <Input onChange={(e) => this.changeHandler(e)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Type {i + 1}</label>
-                                            <Form.Item
-                                              name={[field.name, 'Type']}
-                                              fieldKey={[field.fieldKey, 'Type']}>
-                                              <Input onChange={(e) => this.changeHandler(e)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">City {i + 1} </label>
-                                            <Form.Item name={[field.name, 'City']}
-                                              fieldKey={[field.fieldKey, 'City']}>
-                                              <Input onChange={(e) => this.changeHandler(e)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Province {i + 1}</label>
-                                            <Form.Item name={[field.name, 'Province']}
-                                              fieldKey={[field.fieldKey, 'Province']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Postal Code {i + 1}</label>
-                                            <Form.Item name={[field.name, 'PostalCode']}
-                                              fieldKey={[field.fieldKey, 'PostalCode']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Country {i + 1}</label>
-                                            <Form.Item name={[field.name, 'Country']}
-                                              fieldKey={[field.fieldKey, 'Country']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Contact Person {i + 1}</label>
-                                            <Form.Item name={[field.name, 'ContactPerson']}
-                                              fieldKey={[field.fieldKey, 'ContactPerson']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Email {i + 1}</label>
-                                            <Form.Item name={[field.name, 'Email']}
-                                              fieldKey={[field.fieldKey, 'Email']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="form-group">
-                                            <label className="formlabel">Phone {i + 1}</label>
-                                            <Form.Item name={[field.name, 'Phone']}
-                                              fieldKey={[field.fieldKey, 'Phone']}>
-                                              <Input onChange={(event) => this.changeHandler(event)} />
-                                            </Form.Item>
-                                          </div>
-                                          <div className="formfieldremove">
-                                            <MinusCircleOutlined onClick={() => remove(field.name)} />
-                                          </div>
-                                        </>
-                                      )}
-                                    </Form.Item>
-                                  </Space>
-                                ))}
-                                <Form.Item>
-                                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>Add Address</Button>
-                                </Form.Item>
-                              </>
-                            )}
-                          </Form.List>
-                          <div className="mt-4">
-                            <Form.Item>
-                              <Button type="primary" htmlType="submit" className="btn btn-orange-search">Add Address</Button>
-                            </Form.Item>
-                          </div>
-                        </Form>
                       </div>
-                    </div>
-                  }
+                      <div className="form-group">
+                        <label className="formlabel">Record Status </label>
+                        <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
+                          {this.state.changeRecordStatusId.map(tradeDetails => (
+                            <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
+                          ))}
+                        </Select>
+                      </div>
+                      <div className="form-group">
+                        <label>Website</label>
+                        <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
+                          <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
+                        </Form.Item>
+                      </div>
+                      <div className="form-group">
+                        <label>Phone Number</label>
+                        <Form.Item>
+                          <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
+                        </Form.Item>
+                      </div>
+                      <div className="form-check mb-3 check_custom">
+                        <Form.Item className="m-0">
+                          <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
+                        </Form.Item>
+                        <label className="form-check-label ml-2">Active</label>
+                      </div>
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
+                      </Form.Item>
+                    </Form>
+                  </div>
+                </div>
+                <div className="mt-3 col-md-12 d-flex justify-content-lg-end">
+                  <Button type="primay" className="btn btn-orange-search" onClick={this.props.onRowAdd}>Add</Button>
+                </div>
+                <div className="col-md-12 custom_table">
+
+                  <table className="table table-bordered table-responsive">
+                    <thead>
+                      <tr>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Postal Code</th>
+                        <th>Province</th>
+                        <th>Contact Person</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Type</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {product}
+                    </tbody>
+                  </table>
+
+                </div>
+                <div className="mt-3 col-md-12 d-flex justify-content-lg-end">
+                  <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
                 </div>
               </div>
+
+              {/* </div>
+              </div> */}
             </div>
-            <Footer />
           </div>
+          <Footer />
         </div>
-      </div >
-    )
+      </div>
+
+    );
+
   }
+
+}
+
+class ProductRow extends React.Component {
+
+  handleDelete = (key) => {
+    deleteCompanyAddress(key).then(res => {
+      if (res.status === 200) {
+        notification.open({
+          message: 'Success',
+          description: 'The company address has been successfully deleted!'
+        })
+        getOnlyOneCompanyAddress(this.props.product.CompanyId).then(Res => {
+          if (Res.status === 200) {
+            const changedValue =
+              Res.data.data.map(({
+                address, type, city, country, postalCode, province, contactPerson, companyId, id, createdBy, modifiedBy, email, phone }) => ({
+                  Address: address,
+                  Type: type,
+                  Id: id,
+                  CompanyId: this.props.product.CompanyId,
+                  City: city,
+                  Country: country,
+                  PostalCode: postalCode,
+                  Province: province,
+                  ContactPerson: contactPerson,
+                  RecordStatusId: 1,
+                  CreatedBy: createdBy,
+                  ModifiedBy: modifiedBy,
+                  Email: email,
+                  Phone: phone
+                }));
+            this.setState({ companyAddress: changedValue }, () => {
+              window.location.reload()
+            });
+          }
+        }).catch(err => { })
+      }
+    }).catch(err => {
+      notification.open({
+        message: 'Error',
+        description: 'There was an error while deleting a company address!'
+      })
+    })
+  };
+
+  render() {
+    console.log('this.props => ', this.props);
+
+
+    return (
+      <tr className="eachRow">
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          "type": "Address",
+          value: this.props.product.Address,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "City",
+          value: this.props.product.City,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "Country",
+          value: this.props.product.Country,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "PostalCode",
+          value: this.props.product.PostalCode,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "Province",
+          value: this.props.product.Province,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "ContactPerson",
+          value: this.props.product.ContactPerson,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "Email",
+          value: this.props.product.Email,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "Phone",
+          value: this.props.product.Phone,
+          id: this.props.product.Id
+        }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "Type",
+          value: this.props.product.Type,
+          id: this.props.product.Id
+        }} />
+        <div className="d-none" >
+          <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+            type: "CreatedBy",
+            value: this.props.product.CreatedBy,
+            id: this.props.product.Id
+          }} />
+          <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+            type: "ModifiedBy",
+            value: this.props.product.ModifiedBy,
+            id: this.props.product.Id
+          }} />
+          <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+            type: "CompanyId",
+            value: this.props.product.CompanyId,
+            id: this.props.product.Id
+          }} />
+        </div>
+        <td className="del-cell">
+          <Button className="btn btn-danger" onClick={(e) => this.handleDelete(this.props.product.Id)} >Delete</Button>
+        </td>
+      </tr>
+    );
+
+  }
+
+}
+class EditableCell extends React.Component {
+
+  render() {
+    return (
+      <td>
+        <input type='text' name={this.props.cellData.type} id={this.props.cellData.id} value={this.props.cellData.value} onChange={this.props.onProductTableUpdate} />
+      </td>
+    );
+  }
+
 }

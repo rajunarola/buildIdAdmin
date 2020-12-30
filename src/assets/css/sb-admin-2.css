@@ -10937,3 +10937,25 @@ ul.pagination {
   align-items: baseline;
   margin-right: 10px !important;
 }
+
+.custom_table input {
+  border: 1px solid #d9d9d9;
+  height: 35px;
+  padding: 0 5px;
+  color: #333333;
+  border-radius: 5px;
+}
+
+.check_custom {
+  padding-left: 0 !important;
+  display: flex !important;
+  align-items: center;
+}
+
+.table-responsive {
+  display: block;
+  width: 1640px !important;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}

@@ -8,7 +8,6 @@ import Pagination from 'react-paginate';
 import swal from 'sweetalert';
 import { notification, Table } from 'antd';
 import Loader from '../Loader/Loader';
-
 export default class TicketsList extends Component {
 
     state = {

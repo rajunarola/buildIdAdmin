@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-
 export default class SideNav extends Component {
 
     state = {
@@ -44,12 +43,7 @@ export default class SideNav extends Component {
                             <span>Building Types</span>
                         </Link>
                     </li>
-                    <li className="nav-item">
-                        <Link className="nav-link" to="/building-2">
-                            <i className="fas fa-fw fa-building"></i>
-                            <span>Building 2</span>
-                        </Link>
-                    </li>
+
                     <li className="nav-item">
                         <Link className="nav-link" to="/company-list">
                             <i className="fas fa-fw fa-cog"></i>

@@ -8,7 +8,7 @@ import SideNav from '../_layout/SideNav/SideNav';
 import swal from 'sweetalert';
 import { Link } from 'react-router-dom';
 import Loader from '../Loader/Loader';
-
+import moment from 'moment'
 export default class RolesList extends Component {
 
     state = {
@@ -46,6 +46,13 @@ export default class RolesList extends Component {
             dataIndex: "name",
             key: "name",
             sorter: (a, b) => a.name.localeCompare(b.name)
+        },
+        {
+            title: "Created Date",
+            dataIndex: "dateCreated",
+            key: "dateCreated",
+            sorter: (a, b) => moment(a.dateCreated).unix() - moment(b.dateCreated).unix(),
+            render: (dateCreated) => dateCreated !== null ? moment(dateCreated).format('MM-DD-YYYY') : '-'
         },
         {
             title: "RecordStatus",

@@ -8,7 +8,7 @@ import Pagination from 'react-paginate';
 import swal from 'sweetalert';
 import { notification, Table } from 'antd';
 import Loader from '../Loader/Loader';
-
+import moment from 'moment'
 export default class ProjectsList extends Component {
 
     state = {
@@ -28,7 +28,8 @@ export default class ProjectsList extends Component {
     handlePageClick = page => {
         const pageno = page.selected + 1;
         getAllProjects(pageno).then(res => {
-            console.log('res => ', res.data.data);
+            console.log('Res => ', res);
+
             this.setState({ projectType: res.data.data, total: res.data.message, loading: false });
             let pageCount = this.state.total / this.state.limit
             this.setState({ pageCount: pageCount, currentPage: pageno })
@@ -46,6 +47,20 @@ export default class ProjectsList extends Component {
             dataIndex: "name",
             key: "name",
             sorter: (a, b) => a.name.localeCompare(b.name)
+        },
+        {
+            title: "Building Name",
+            dataIndex: "buildingTypeName",
+            key: "buildingTypeName",
+            sorter: (a, b) => a.buildingTypeName.localeCompare(b.buildingTypeName),
+            render: (buildingTypeName) => buildingTypeName !== "" ? buildingTypeName : '-'
+        },
+        {
+            title: "Created Date",
+            dataIndex: "dateCreated",
+            key: "dateCreated",
+            sorter: (a, b) => moment(a.dateCreated).unix() - moment(b.dateCreated).unix(),
+            render: (dateCreated) => dateCreated !== null ? moment(dateCreated).format('MM-DD-YYYY') : '-'
         },
         {
             title: "RecordStatus",

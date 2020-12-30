@@ -29,7 +29,6 @@ import EditItem from './Item/EditItem';
 import EditBuildingType from './BuildingType/EditBuildingType';
 import EditRoles from './Roles/EditRoles';
 import EditTickets from './Tickets/EditTickets';
-import EditableTable from './BuildingType/Buildlist2';
 class App extends React.Component {
 
     render() {
@@ -64,10 +63,6 @@ class App extends React.Component {
                         <Route path="/add-project" exact component={AddProjects} />
                         <Route path="/project-list" exact component={ProjectsList} />
                         <Route path="/forgot-password" exact component={ForgotPassword} />
-                        
-                        
-                        <Route path="/building-2" exact component={EditableTable} />
-
 
                     </Switch>
                 </BrowserRouter>
