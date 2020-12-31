@@ -1,6 +1,6 @@
 import React from 'react';
 import { getOnlyOneCompanyAddress, getCompanyById, getRecordStatusForCompanies, postCompany, deleteCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI';
-import { Form, Input, notification, Button, Checkbox, Select } from 'antd';
+import { Form, Input, notification, Button, Checkbox, Select, Table } from 'antd';
 import Loader from '../Loader/Loader';
 import SideNav from '../_layout/SideNav/SideNav';
 import { Link } from 'react-router-dom';
@@ -14,6 +14,7 @@ export default class Products extends React.Component {
     this.state = {};
     this.state.filterText = "";
     this.state.params = parseInt(this.props.match.params.id);
+    this.state.columns = this.state.fullAddress
   }
 
   state = {
@@ -28,11 +29,13 @@ export default class Products extends React.Component {
     Active: false,
     changeRecordStatusId: [],
     companyAddress: [],
-    companyData: []
+    companyData: [],
+    fullAddress: []
   }
 
   async componentDidMount() {
     await getOnlyOneCompanyAddress(this.props.match.params.id).then(Res => {
+      this.setState({ fullAddress: Res.data.data })
       if (Res.status === 200) {
         const changedValue =
           Res.data.data.map(({
@@ -93,8 +96,6 @@ export default class Products extends React.Component {
   }
 
   handleProductTable(evt) {
-    console.log('evt => ', evt);
-
     var item = {
       id: evt.target.id,
       name: evt.target.name,
@@ -118,28 +119,11 @@ export default class Products extends React.Component {
 
     return (
       <div>
-        {/* <SearchBar filterText={this.state.filterText} onUserInput={this.handleUserInput.bind(this)} /> */}
-        <ProductTable onProductTableUpdate={this.handleProductTable.bind(this)} onRowAdd={this.handleAddEvent.bind(this)} products={this.state.companyAddress} filterText={this.state.filterText} params={this.state.params} />
+        <ProductTable onProductTableUpdate={this.handleProductTable.bind(this)} onRowAdd={this.handleAddEvent.bind(this)} products={this.state.companyAddress} filterText={this.state.filterText} params={this.state.params} fullCompany={this.state.fullAddress} />
       </div>
-    );
-
-  }
-
-}
-class SearchBar extends React.Component {
-  handleChange() {
-    this.props.onUserInput(this.refs.filterTextInput.value);
-  }
-  render() {
-    return (
-      <div>
-        <input type="text" placeholder="Search..." value={this.props.filterText} ref="filterTextInput" onChange={this.handleChange.bind(this)} />
-      </div>
-
     );
   }
 }
-
 class ProductTable extends React.Component {
 
   state = {
@@ -155,7 +139,8 @@ class ProductTable extends React.Component {
     changeRecordStatusId: [],
     companyAddress: [],
     companyData: [],
-    loading: false
+    loading: false,
+    gridEdit: false
   }
 
   componentDidMount() {
@@ -197,19 +182,16 @@ class ProductTable extends React.Component {
     });
   }
 
-
   updateCompanyAddress = () => {
-    console.log('this.props => ', this.props);
-    // this.props.products[CreatedBy] = this.props.params
-    // this.props.products[ModifiedBy] = this.props.params
-    console.log('this.state.companyAddress => ', this.state.companyAddress);
-
     postCompanyAddress({ Content: JSON.stringify(this.props.products) }).then(res => {
       if (res.data.message === "OK") {
         notification.open({
           message: 'Success',
           description: 'Company Address successfully updated!'
         })
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } else if (res.data.message !== "OK") {
         notification.open({
           message: 'Error',
@@ -228,6 +210,51 @@ class ProductTable extends React.Component {
     this.setState({
       [event.target.name]: event.target.value
     })
+  }
+
+  columns = [
+    {
+      title: "Address",
+      dataIndex: "address",
+      sorter: (a, b) => a.Address.localeCompare(b.Address),
+    },
+    {
+      title: "City",
+      dataIndex: "city"
+    },
+    {
+      title: "Country",
+      dataIndex: "country"
+    },
+    {
+      title: "Postal Code",
+      dataIndex: "postalCode"
+    },
+    {
+      title: "Province",
+      dataIndex: "province"
+    },
+    {
+      title: "Contact Person",
+      dataIndex: "contactPerson"
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      sorter: (a, b) => a.Email.localeCompare(b.Email)
+    },
+    {
+      title: "Phone Number",
+      dataIndex: "phone"
+    },
+    {
+      title: "Type",
+      dataIndex: "type"
+    }
+  ]
+
+  gridEdit() {
+    this.setState({ gridEdit: !this.state.gridEdit })
   }
 
   render() {
@@ -275,112 +302,106 @@ class ProductTable extends React.Component {
 
     return (
 
-      <div className="d-flex">
-        {this.state.loading ? <Loader /> : <>
-          <SideNav />
-          <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-            <div className="content">
-              <Header />
-            </div>
-            <div className="container-fluid">
-              <div class="main-title-lg mb-5 d-flex justify-content-between">
-                <h1 class="h3 text-gray-800">Edit Company</h1>
-                <Link to="/company-list" class="btn btn-orange-search">View Company List</Link>
+      <>
+        {this.state.loading ? <Loader /> :
+          <div className="d-flex">
+            <SideNav />
+            <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
+              <div className="content">
+                <Header />
               </div>
-              {/* <div class="card shadow mb-4">
-              <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold txt-orange">Edit List </h6> */}
-              <div className="trade-form-wrap">
-                <div className="row mt-5">
-                  <div className="col-lg-6">
-                    <div className="bg-white p-5 form-border">
-                      <Form onFinish={updateCompany}>
-                        <div className="form-group">
-                          <label>Company Name</label>
+              <div className="container-fluid">
+                <div class="main-title-lg mb-5 d-flex justify-content-between">
+                  <h1 class="h3 text-gray-800">Edit Company</h1>
+                  <Link to="/company-list" class="btn btn-orange-search">View Company List</Link>
+                </div>
+                <div className="trade-form-wrap">
+                  <div className="row mt-5">
+                    <div className="col-lg-6">
+                      <div className="bg-white p-5 form-border">
+                        <Form onFinish={updateCompany}>
+                          <div className="form-group">
+                            <label>Company Name</label>
+                            <Form.Item>
+                              <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                            </Form.Item>
+                          </div>
+                          <div className="form-group">
+                            <label className="formlabel">Record Status </label>
+                            <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
+                              {this.state.changeRecordStatusId.map(tradeDetails => (
+                                <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
+                              ))}
+                            </Select>
+                          </div>
+                          <div className="form-group">
+                            <label>Website</label>
+                            <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
+                              <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
+                            </Form.Item>
+                          </div>
+                          <div className="form-group">
+                            <label>Phone Number</label>
+                            <Form.Item>
+                              <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
+                            </Form.Item>
+                          </div>
+                          <div className="form-check mb-3 check_custom">
+                            <Form.Item className="m-0">
+                              <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
+                            </Form.Item>
+                            <label className="form-check-label ml-2">Active</label>
+                          </div>
                           <Form.Item>
-                            <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                            <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
                           </Form.Item>
-                        </div>
-                        <div className="form-group">
-                          <label className="formlabel">Record Status </label>
-                          <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                            {this.state.changeRecordStatusId.map(tradeDetails => (
-                              <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
-                            ))}
-                          </Select>
-                        </div>
-                        <div className="form-group">
-                          <label>Website</label>
-                          <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
-                            <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
-                          </Form.Item>
-                        </div>
-                        <div className="form-group">
-                          <label>Phone Number</label>
-                          <Form.Item>
-                            <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
-                          </Form.Item>
-                        </div>
-                        <div className="form-check mb-3 check_custom">
-                          <Form.Item className="m-0">
-                            <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
-                          </Form.Item>
-                          <label className="form-check-label ml-2">Active</label>
-                        </div>
-                        <Form.Item>
-                          <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
-                        </Form.Item>
-                      </Form>
+                        </Form>
+                      </div>
+                    </div>
+                    <div className="mt-3 col-md-12 d-flex mb-3">
+                      <Button type="primay" className="btn btn-orange-search" disabled={!this.state.gridEdit} onClick={this.props.onRowAdd}>Add</Button>
+                      <Button type="primay" className="btn btn-orange-search ml-3" onClick={() => this.gridEdit()}>Edit</Button>
+                    </div>
+
+                    {this.state.gridEdit ?
+                      <div className="col-md-12 custom_table">
+                        <table className="table table-bordered table-responsive">
+                          <thead>
+                            <tr>
+                              <th>Address</th>
+                              <th>City</th>
+                              <th>Country</th>
+                              <th>Postal Code</th>
+                              <th>Province</th>
+                              <th>Contact Person</th>
+                              <th>Email</th>
+                              <th>Phone</th>
+                              <th>Type</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {product}
+                          </tbody>
+                        </table>
+                      </div> :
+                      <div className="col-md-12 custom_table">
+                        <Table dataSource={this.props.fullCompany} columns={this.columns} />
+                      </div>
+                    }
+                    <div className="mt-3 col-md-12 d-flex">
+                      <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
                     </div>
                   </div>
-                  <div className="mt-3 col-md-12 d-flex mb-3">
-                    <Button type="primay" className="btn btn-orange-search" onClick={this.props.onRowAdd}>Add</Button>
-                  </div>
-                  <div className="col-md-12 custom_table">
-
-                    <table className="table table-bordered table-responsive">
-                      <thead>
-                        <tr>
-                          <th>Address</th>
-                          <th>City</th>
-                          <th>Country</th>
-                          <th>Postal Code</th>
-                          <th>Province</th>
-                          <th>Contact Person</th>
-                          <th>Email</th>
-                          <th>Phone</th>
-                          <th>Type</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {product}
-                      </tbody>
-                    </table>
-
-                  </div>
-                  <div className="mt-3 col-md-12 d-flex">
-                    <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
-                  </div>
                 </div>
-
-                {/* </div>
-              </div> */}
               </div>
+              <Footer />
             </div>
-            <Footer />
-
-          </div>
-        </>
-        }
-
-      </div>
+          </div>}
+      </>
     );
-
   }
-
 }
-
 class ProductRow extends React.Component {
 
   handleDelete = (key) => {
@@ -425,8 +446,6 @@ class ProductRow extends React.Component {
   };
 
   render() {
-    console.log('this.props => ', this.props);
-
 
     return (
       <tr className="eachRow">
@@ -475,7 +494,7 @@ class ProductRow extends React.Component {
           value: this.props.product.Type,
           id: this.props.product.Id
         }} />
-        <div className="d-none" >
+        <div className="d-none">
           <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
             type: "CreatedBy",
             value: this.props.product.CreatedBy,
@@ -497,9 +516,7 @@ class ProductRow extends React.Component {
         </td>
       </tr>
     );
-
   }
-
 }
 class EditableCell extends React.Component {
 

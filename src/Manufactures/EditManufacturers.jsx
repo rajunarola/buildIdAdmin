@@ -122,7 +122,7 @@ export default class EditManufacturers extends Component {
                                                     </Select>
                                                 </div>
                                                 <Form.Item>
-                                                    <Button type="primary" htmlType="submit">Update Trade</Button>
+                                                    <Button type="primary" htmlType="submit">Update Manufacturer</Button>
                                                 </Form.Item>
                                             </Form>
                                         </div>
