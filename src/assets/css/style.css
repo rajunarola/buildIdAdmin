@@ -1,0 +1,29 @@
+/* New Custome */
+
+.website_main_section {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 100% !important;
+    height: 100%;
+}
+
+.part_one {
+    width: 270px;
+}
+
+.part_two {
+    width: calc(100% - 270px);
+}
+
+.sidebar .nav-item .nav-link {
+    width: 100% !important;
+    padding: 15px 10px 15px 20px !important;
+}
+
+.main_section_add {
+    min-height: calc(100vh - 170px);
+}

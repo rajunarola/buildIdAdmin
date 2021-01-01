@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
-import Footer from '../_layout/Footer/Footer'
-import Header from '../_layout/Header/Header'
-import SideNav from '../_layout/SideNav/SideNav'
 import { Link } from 'react-router-dom';
 import { Form, Input, Select, notification, Button, Image } from 'antd';
-import { getItemById, getItemPicture, getRecordStatusListForItems, postItem, saveItemPicture, getItemPictureById } from '../Services/ItemAPI';
+import { getItemById, getItemPicture, getRecordStatusListForItems, postItem, saveItemPicture } from '../Services/ItemAPI';
 import Loader from '../Loader/Loader';
-
 export default class EditItem extends Component {
 
     state = {
@@ -24,9 +20,7 @@ export default class EditItem extends Component {
     componentDidMount() {
         this.setState({ loading: true })
         const itemId = this.props.match.params.id;
-        console.log('this.props.match.params.id => ', this.props.match.params.id);
         getItemById(itemId).then(res => {
-            console.log('res => ', res.data.data);
             this.setState({
                 Id: res.data.data.id,
                 Name: res.data.data.name,
@@ -35,33 +29,29 @@ export default class EditItem extends Component {
                 loading: false
             });
         }).catch(err => {
-            console.log('err => ', err);
-            notification.open({
+            notification.error({
                 message: 'Error',
                 description: 'There was an error while fetching all Item data!'
             });
         });
 
         getItemPicture(itemId).then(res => {
-            console.log('res getItemPicture=> ', res);
             this.setState({
                 itemId: res.data.data[0].itemId,
                 Main: res.data.data[0].main,
                 imageId: res.data.data[0].id
             })
         }).catch(err => {
-            console.log('err => ', err);
-            notification.open({
+            notification.error({
                 message: 'Error',
                 description: 'There was an error while fetching Item picture data!'
             });
         })
 
         getRecordStatusListForItems().then(res => {
-            console.log('res getRecordStatusForTrades=> ', res);
             this.setState({ changeRecordStatusId: res.data.data })
         }).catch(err => {
-            notification.open({
+            notification.error({
                 message: 'Error',
                 description: 'There was an error while fetching Item record status list data!'
             });
@@ -91,20 +81,20 @@ export default class EditItem extends Component {
         saveItemPicture(formData).then(res => {
             if (res.data.status === true) {
                 this.setState({ loading: false });
-                notification.open({
+                notification.success({
                     message: 'Success',
                     description: 'Image Changed Successfully!'
                 });
             } else {
                 this.setState({ loading: false });
-                notification.open({
+                notification.error({
                     message: 'Error',
                     description: 'There was an error while uploading an image! Please try again!'
                 });
             }
         }).catch(err => {
             this.setState({ loading: false });
-            notification.open({
+            notification.error({
                 message: 'Error',
                 description: 'There was an error while uploading an image! Please try again!'
             });
@@ -129,13 +119,13 @@ export default class EditItem extends Component {
             postItem({ Content: JSON.stringify(data.Content) }).then(res => {
                 console.log('res => ', res);
                 if (res.data.status === true) {
-                    notification.open({
+                    notification.success({
                         message: 'Success',
                         description: 'Item successfully updated!'
                     });
                 }
             }).catch(err => {
-                notification.open({
+                notification.error({
                     message: 'Error',
                     description: 'There was an error while updating Item data!'
                 });
@@ -145,55 +135,46 @@ export default class EditItem extends Component {
         return (
             <div>
                 {this.state.loading ? <Loader /> :
-                    <div className="d-flex">
-                        <SideNav />
-                        <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-                            <div className="content">
-                                <Header />
-                            </div>
-                            <div className="container-fluid">
-                                <div className="main-title-lg mb-5 d-flex justify-content-between">
-                                    <h1 className="h3 text-gray-800">Edit Item</h1>
-                                    <Link to="/item-list" className="btn btn-orange-search">View Item List</Link>
-                                </div>
-                                <div className="trade-form-wrap">
-                                    <div className="row mt-5">
-                                        <div className="col-lg-6">
-                                            <div className="bg-white p-5 form-border">
-                                                <Form onFinish={updateItem}>
-                                                    <div className="form-group">
-                                                        <label>Item Image</label>
-                                                        <Form.Item>
-                                                            <Image width={200} src={this.state.imgSrc} />
-                                                            <input type="file" onChange={(e) => this.changeImage(e)} />
-                                                        </Form.Item>
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label>Item Name</label>
-                                                        <Form.Item>
-                                                            <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
-                                                        </Form.Item>
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label className="formlabel">Record Status </label>
-                                                        <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                                                            {
-                                                                this.state.changeRecordStatusId.map(tradeDetails => (
-                                                                    <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
-                                                                ))
-                                                            }
-                                                        </Select>
-                                                    </div>
-                                                    <Form.Item>
-                                                        <Button type="primary" htmlType="submit">Update Item</Button>
-                                                    </Form.Item>
-                                                </Form>
+                    <div className="container-fluid">
+                        <div className="main-title-lg mb-5 d-flex justify-content-between">
+                            <h1 className="h3 text-gray-800">Edit Item</h1>
+                            <Link to="/item-list" className="btn btn-orange-search">View Item List</Link>
+                        </div>
+                        <div className="trade-form-wrap">
+                            <div className="row mt-5">
+                                <div className="col-lg-6">
+                                    <div className="bg-white p-5 form-border">
+                                        <Form onFinish={updateItem}>
+                                            <div className="form-group">
+                                                <label>Item Image</label>
+                                                <Form.Item>
+                                                    <Image width={200} src={this.state.imgSrc} />
+                                                    <input type="file" onChange={(e) => this.changeImage(e)} />
+                                                </Form.Item>
                                             </div>
-                                        </div>
+                                            <div className="form-group">
+                                                <label>Item Name</label>
+                                                <Form.Item>
+                                                    <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                                                </Form.Item>
+                                            </div>
+                                            <div className="form-group">
+                                                <label className="formlabel">Record Status </label>
+                                                <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
+                                                    {
+                                                        this.state.changeRecordStatusId.map(tradeDetails => (
+                                                            <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
+                                                        ))
+                                                    }
+                                                </Select>
+                                            </div>
+                                            <Form.Item>
+                                                <Button type="primary" htmlType="submit">Update Item</Button>
+                                            </Form.Item>
+                                        </Form>
                                     </div>
                                 </div>
                             </div>
-                            <Footer />
                         </div>
                     </div>
                 }

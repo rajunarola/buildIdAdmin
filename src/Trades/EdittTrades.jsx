@@ -22,7 +22,6 @@ export default class EdittTrades extends Component {
     componentDidMount() {
         const tradeId = this.props.match.params.id;
         getTradeById(tradeId).then(res => {
-            console.log('res getTradeById=> ', res);
             this.setState({
                 Id: res.data.data.id,
                 Name: res.data.data.name,
@@ -33,7 +32,6 @@ export default class EdittTrades extends Component {
                 DateModified: res.data.data.dateModified
             });
         }).catch(err => {
-            console.log('err => ', err);
             notification.open({
                 message: 'Error',
                 description: 'There was an error while fetching trade data!'
@@ -41,10 +39,8 @@ export default class EdittTrades extends Component {
         });
 
         getRecordStatusForTrades().then(res => {
-            console.log('res getRecordStatusForTrades=> ', res);
             this.setState({ changeRecordStatusId: res.data.data })
         }).catch(err => {
-            console.log('err => ', err);
             notification.open({
                 message: 'Error',
                 description: 'There was an error while fetching record status for trade!'
@@ -75,7 +71,6 @@ export default class EdittTrades extends Component {
                 DateModified: moment(new Date()).format('YYYY-MM-DD'),
             }
             postTrades(data).then(res => {
-                console.log('res => ', res);
                 if (res.data.status === true) {
                     notification.open({
                         message: 'Success',
@@ -83,7 +78,6 @@ export default class EdittTrades extends Component {
                     });
                 }
             }).catch(err => {
-                console.log('err => ', err);
                 notification.open({
                     message: 'Error',
                     description: 'There was an error while updating trade!'
@@ -93,48 +87,39 @@ export default class EdittTrades extends Component {
 
         return (
             <div>
-                <div className="d-flex">
-                    <SideNav />
-                    <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-                        <div className="content">
-                            <Header />
-                        </div>
-                        <div className="container-fluid">
-                            <div className="main-title-lg mb-5 d-flex justify-content-between">
-                                <h1 className="h3 text-gray-800">Edit Trade</h1>
-                                <Link to="/trade-list" className="btn btn-orange-search">View Trades List</Link>
-                            </div>
-                            <div className="trade-form-wrap">
-                                <div className="row mt-5">
-                                    <div className="col-lg-6">
-                                        <div className="bg-white p-5 form-border">
-                                            <Form onFinish={updateTrade}>
-                                                <div className="form-group">
-                                                    <label>Name</label>
-                                                    <Form.Item>
-                                                        <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
-                                                    </Form.Item>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="formlabel">Record Status </label>
-                                                    <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                                                        {
-                                                            this.state.changeRecordStatusId.map(tradeDetails => (
-                                                                <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
-                                                            ))
-                                                        }
-                                                    </Select>
-                                                </div>
-                                                <Form.Item>
-                                                    <Button type="primary" htmlType="submit">Update Trade</Button>
-                                                </Form.Item>
-                                            </Form>
+                <div className="container-fluid">
+                    <div className="main-title-lg mb-5 d-flex justify-content-between">
+                        <h1 className="h3 text-gray-800">Edit Trade</h1>
+                        <Link to="/trade-list" className="btn btn-orange-search">View Trades List</Link>
+                    </div>
+                    <div className="trade-form-wrap">
+                        <div className="row mt-5">
+                            <div className="col-lg-6">
+                                <div className="bg-white p-5 form-border">
+                                    <Form onFinish={updateTrade}>
+                                        <div className="form-group">
+                                            <label>Name</label>
+                                            <Form.Item>
+                                                <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
                                         </div>
-                                    </div>
+                                        <div className="form-group">
+                                            <label className="formlabel">Record Status </label>
+                                            <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
+                                                {
+                                                    this.state.changeRecordStatusId.map(tradeDetails => (
+                                                        <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
+                                                    ))
+                                                }
+                                            </Select>
+                                        </div>
+                                        <Form.Item>
+                                            <Button type="primary" htmlType="submit">Update Trade</Button>
+                                        </Form.Item>
+                                    </Form>
                                 </div>
                             </div>
                         </div>
-                        <Footer />
                     </div>
                 </div>
             </div>

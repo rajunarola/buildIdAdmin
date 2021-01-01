@@ -24,14 +24,13 @@ export default class RolesList extends Component {
         this.setState({ loading: true })
     }
 
-
     handlePageClick = page => {
         const pageno = page.selected + 1;
         getAllRoles(pageno).then(res => {
-            console.log('res => ', res.data.data);
-            this.setState({ roleType: res.data.data, total: res.data.message, loading: false });
-            let pageCount = this.state.total / this.state.limit
-            this.setState({ pageCount: pageCount, currentPage: pageno });
+            this.setState({ roleType: res.data.data, total: res.data.message, loading: false }, () => {
+                let pageCount = this.state.total / this.state.limit
+                this.setState({ pageCount: pageCount, currentPage: pageno });
+            });
         }).catch(err => {
             notification.open({
                 message: 'Error',
@@ -148,57 +147,47 @@ export default class RolesList extends Component {
         return (
             <div>
                 {this.state.loading ? <Loader /> :
-                    <div className="d-flex">
-                        <SideNav />
-                        <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-                            <div className="content">
-                                <Header />
-                            </div>
-                            <div className="container-fluid">
-                                <div className="main-title-lg mb-5 d-flex justify-content-between">
-                                    <h1 className="h3 text-gray-800">Role List</h1>
-                                    <Link to="/add-roles" className="btn btn-orange-search">Add Role</Link>
-                                </div>
-                                <div className="card shadow mb-4">
-                                    <div className="card-header py-3 d-sm-flex align-items-center justify-content-between">
-                                        <h6 className="m-0 font-weight-bold txt-orange">Role List</h6>
-                                        <div className="search-data position-relative">
-                                            <input type="text" onChange={(e) => this.getSearchStringData(e)} className="form-control" />
-                                            <button className="searchbtn"><i className="fas fa-search"></i></button>
-                                        </div>
-                                    </div>
-                                    <Table dataSource={roleType} columns={this.columns} />
-                                    <Pagination
-                                        initialPage={0}
-                                        previousLabel={"Previous"}
-                                        nextLabel={"Next"}
-                                        breakLabel={"..."}
-                                        breakClassName={"page-item"}
-                                        breakLinkClassName={"page-link"}
-                                        pageClassName={"page-item"}
-                                        previousClassName={"page-item"}
-                                        pageLinkClassName={"page-link"}
-                                        nextClassName={"page-item"}
-                                        previousLinkClassName={"page-link"}
-                                        nextLinkClassName={"page-link"}
-                                        // marginPagesDisplayed={totalPages}
-                                        pageRangeDisplayed={this.state.limit}
-                                        pageCount={this.state.pageCount}
-                                        pageRangeDisplayed={10}
-                                        onPageChange={this.handlePageClick}
-                                        containerClassName={"pagination"}
-                                        subContainerClassName={""}
-                                        activeClassName={"active"}
-                                    />
+                    <div className="container-fluid">
+                        <div className="main-title-lg mb-5 d-flex justify-content-between">
+                            <h1 className="h3 text-gray-800">Role List</h1>
+                            <Link to="/add-roles" className="btn btn-orange-search">Add Role</Link>
+                        </div>
+                        <div className="card shadow mb-4">
+                            <div className="card-header py-3 d-sm-flex align-items-center justify-content-between">
+                                <h6 className="m-0 font-weight-bold txt-orange">Role List</h6>
+                                <div className="search-data position-relative">
+                                    <input placeholder="Search Roles" type="text" onChange={(e) => this.getSearchStringData(e)} className="form-control" />
+                                    <button className="searchbtn"><i className="fas fa-search"></i></button>
                                 </div>
                             </div>
-                            <Footer />
+                            <Table dataSource={roleType} columns={this.columns} />
+                            <Pagination
+                                initialPage={0}
+                                previousLabel={"Previous"}
+                                nextLabel={"Next"}
+                                breakLabel={"..."}
+                                breakClassName={"page-item"}
+                                breakLinkClassName={"page-link"}
+                                pageClassName={"page-item"}
+                                previousClassName={"page-item"}
+                                pageLinkClassName={"page-link"}
+                                nextClassName={"page-item"}
+                                previousLinkClassName={"page-link"}
+                                nextLinkClassName={"page-link"}
+                                // marginPagesDisplayed={totalPages}
+                                pageRangeDisplayed={this.state.limit}
+                                pageCount={this.state.pageCount}
+                                pageRangeDisplayed={10}
+                                onPageChange={this.handlePageClick}
+                                containerClassName={"pagination"}
+                                subContainerClassName={""}
+                                activeClassName={"active"}
+                            />
                         </div>
                     </div>
                 }
             </div>
         )
     }
-
 
 }

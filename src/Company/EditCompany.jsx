@@ -1,12 +1,16 @@
 import React from 'react';
-import { getOnlyOneCompanyAddress, getCompanyById, getRecordStatusForCompanies, postCompany, deleteCompanyAddress, postCompanyAddress } from '../Services/CompanyAPI';
+import {
+  getOnlyOneCompanyAddress,
+  getCompanyById,
+  getRecordStatusForCompanies,
+  postCompany,
+  deleteCompanyAddress,
+  postCompanyAddress
+} from '../Services/CompanyAPI';
 import { Form, Input, notification, Button, Checkbox, Select, Table } from 'antd';
 import Loader from '../Loader/Loader';
-import SideNav from '../_layout/SideNav/SideNav';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
-import Footer from '../_layout/Footer/Footer'
-import Header from '../_layout/Header/Header'
 export default class Products extends React.Component {
 
   constructor(props) {
@@ -57,7 +61,7 @@ export default class Products extends React.Component {
         this.setState({ companyAddress: changedValue });
       }
     }).catch(err => {
-      notification.open({
+      notification.error({
         message: 'Error',
         description: 'There was an error while fetching company address!'
       });
@@ -164,7 +168,7 @@ class ProductTable extends React.Component {
       }
     }).catch(err => {
       this.setState({ loadig: false })
-      notification.open({
+      notification.error({
         message: 'Error',
         description: 'There was an error while fetching company data!'
       });
@@ -175,7 +179,7 @@ class ProductTable extends React.Component {
         this.setState({ changeRecordStatusId: res.data.data })
       }
     }).catch(err => {
-      notification.open({
+      notification.error({
         message: 'Error',
         description: 'There was an error while fetching record status for company data!'
       });
@@ -185,7 +189,7 @@ class ProductTable extends React.Component {
   updateCompanyAddress = () => {
     postCompanyAddress({ Content: JSON.stringify(this.props.products) }).then(res => {
       if (res.data.message === "OK") {
-        notification.open({
+        notification.success({
           message: 'Success',
           description: 'Company Address successfully updated!'
         })
@@ -193,13 +197,13 @@ class ProductTable extends React.Component {
           window.location.reload();
         }, 1500);
       } else if (res.data.message !== "OK") {
-        notification.open({
+        notification.error({
           message: 'Error',
           description: 'A record with the same data already exists!'
         })
       }
     }).catch(Err => {
-      notification.open({
+      notification.error({
         message: 'Error',
         description: 'There was an error while updating a company address!'
       })
@@ -287,13 +291,13 @@ class ProductTable extends React.Component {
       }
       postCompany({ Content: JSON.stringify(data.Content) }).then(res => {
         if (res.data.status === true) {
-          notification.open({
+          notification.success({
             message: 'Success',
             description: 'Company data successfully updated!'
           });
         }
       }).catch(err => {
-        notification.open({
+        notification.error({
           message: 'Error',
           description: 'There was an error while updating company!'
         });
@@ -304,100 +308,92 @@ class ProductTable extends React.Component {
 
       <>
         {this.state.loading ? <Loader /> :
-          <div className="d-flex">
-            <SideNav />
-            <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-              <div className="content">
-                <Header />
-              </div>
-              <div className="container-fluid">
-                <div class="main-title-lg mb-5 d-flex justify-content-between">
-                  <h1 class="h3 text-gray-800">Edit Company</h1>
-                  <Link to="/company-list" class="btn btn-orange-search">View Company List</Link>
-                </div>
-                <div className="trade-form-wrap">
-                  <div className="row mt-5">
-                    <div className="col-lg-6">
-                      <div className="bg-white p-5 form-border">
-                        <Form onFinish={updateCompany}>
-                          <div className="form-group">
-                            <label>Company Name</label>
-                            <Form.Item>
-                              <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-group">
-                            <label className="formlabel">Record Status </label>
-                            <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                              {this.state.changeRecordStatusId.map(tradeDetails => (
-                                <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
-                              ))}
-                            </Select>
-                          </div>
-                          <div className="form-group">
-                            <label>Website</label>
-                            <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
-                              <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-group">
-                            <label>Phone Number</label>
-                            <Form.Item>
-                              <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
-                            </Form.Item>
-                          </div>
-                          <div className="form-check mb-3 check_custom">
-                            <Form.Item className="m-0">
-                              <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
-                            </Form.Item>
-                            <label className="form-check-label ml-2">Active</label>
-                          </div>
-                          <Form.Item>
-                            <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
-                          </Form.Item>
-                        </Form>
+          <div className="container-fluid">
+            <div class="main-title-lg mb-5 d-flex justify-content-between">
+              <h1 class="h3 text-gray-800">Edit Company</h1>
+              <Link to="/company-list" class="btn btn-orange-search">View Company List</Link>
+            </div>
+            <div className="trade-form-wrap">
+              <div className="row mt-5">
+                <div className="col-lg-6">
+                  <div className="bg-white p-5 form-border">
+                    <Form onFinish={updateCompany}>
+                      <div className="form-group">
+                        <label>Company Name</label>
+                        <Form.Item>
+                          <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                        </Form.Item>
                       </div>
-                    </div>
-                    <div className="mt-3 col-md-12 d-flex mb-3">
-                      <Button type="primay" className="btn btn-orange-search" disabled={!this.state.gridEdit} onClick={this.props.onRowAdd}>Add</Button>
-                      <Button type="primay" className="btn btn-orange-search ml-3" onClick={() => this.gridEdit()}>Edit</Button>
-                    </div>
-
-                    {this.state.gridEdit ?
-                      <div className="col-md-12 custom_table">
-                        <table className="table table-bordered table-responsive">
-                          <thead>
-                            <tr>
-                              <th>Address</th>
-                              <th>City</th>
-                              <th>Country</th>
-                              <th>Postal Code</th>
-                              <th>Province</th>
-                              <th>Contact Person</th>
-                              <th>Email</th>
-                              <th>Phone</th>
-                              <th>Type</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {product}
-                          </tbody>
-                        </table>
-                      </div> :
-                      <div className="col-md-12 custom_table">
-                        <Table dataSource={this.props.fullCompany} columns={this.columns} />
+                      <div className="form-group">
+                        <label className="formlabel">Record Status </label>
+                        <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
+                          {this.state.changeRecordStatusId.map(tradeDetails => (
+                            <Select.Option value={tradeDetails.id}>{tradeDetails.name}</Select.Option>
+                          ))}
+                        </Select>
                       </div>
-                    }
-                    <div className="mt-3 col-md-12 d-flex">
-                      <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
-                    </div>
+                      <div className="form-group">
+                        <label>Website</label>
+                        <Form.Item rules={[{ type: "email", message: "The input is not valid E-mail!" }]}>
+                          <Input name="WebSite" value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
+                        </Form.Item>
+                      </div>
+                      <div className="form-group">
+                        <label>Phone Number</label>
+                        <Form.Item>
+                          <Input name="Phone" value={this.state.Phone} onChange={(event) => this.changeHandler(event)} />
+                        </Form.Item>
+                      </div>
+                      <div className="form-check mb-3 check_custom">
+                        <Form.Item className="m-0">
+                          <Checkbox name="Active" checked={this.state.Active ? true : false} onChange={(e) => this.getCheckBoxValue(e.target.checked)} />
+                        </Form.Item>
+                        <label className="form-check-label ml-2">Active</label>
+                      </div>
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
+                      </Form.Item>
+                    </Form>
                   </div>
                 </div>
+                <div className="mt-3 col-md-12 d-flex mb-3">
+                  <Button type="primay" className="btn btn-orange-search" disabled={!this.state.gridEdit} onClick={this.props.onRowAdd}>Add</Button>
+                  <Button type="primay" className="btn btn-orange-search ml-3" onClick={() => this.gridEdit()}>Edit</Button>
+                </div>
+
+                {this.state.gridEdit ?
+                  <div className="col-md-12 custom_table">
+                    <table className="table table-bordered table-responsive">
+                      <thead>
+                        <tr>
+                          <th>Address</th>
+                          <th>City</th>
+                          <th>Country</th>
+                          <th>Postal Code</th>
+                          <th>Province</th>
+                          <th>Contact Person</th>
+                          <th>Email</th>
+                          <th>Phone</th>
+                          <th>Type</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {product}
+                      </tbody>
+                    </table>
+                  </div> :
+                  <div className="col-md-12 custom_table">
+                    <Table dataSource={this.props.fullCompany} columns={this.columns} />
+                  </div>
+                }
+                <div className="mt-3 col-md-12 d-flex">
+                  <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
+                </div>
               </div>
-              <Footer />
             </div>
-          </div>}
+          </div>
+        }
       </>
     );
   }
@@ -407,7 +403,7 @@ class ProductRow extends React.Component {
   handleDelete = (key) => {
     deleteCompanyAddress(key).then(res => {
       if (res.status === 200) {
-        notification.open({
+        notification.success({
           message: 'Success',
           description: 'The company address has been successfully deleted!'
         })
@@ -438,7 +434,7 @@ class ProductRow extends React.Component {
         }).catch(err => { })
       }
     }).catch(err => {
-      notification.open({
+      notification.error({
         message: 'Error',
         description: 'There was an error while deleting a company address!'
       })

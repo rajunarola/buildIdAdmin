@@ -21,7 +21,6 @@ export default class EditRoles extends Component {
 
     componentDidMount() {
         const tradeId = this.props.match.params.id;
-        console.log('this.props.match.params.id => ', this.props.match.params.id);
         getRoleByID(tradeId).then(res => {
             console.log('res => ', res);
             this.setState({
@@ -34,15 +33,12 @@ export default class EditRoles extends Component {
                 DateModified: res.data.data.dateModified
             });
         }).catch(err => {
-            console.log('err => ', err);
-
         })
 
         getRecordStatusForRoles().then(res => {
-            console.log('res getRecordStatusForTrades=> ', res);
             this.setState({ changeRecordStatusId: res.data.data })
         }).catch(err => {
-            console.log('err => ', err);
+            // console.log('err => ', err);
         });
     }
 
@@ -69,7 +65,6 @@ export default class EditRoles extends Component {
                 DateModified: moment(new Date()).format('YYYY-MM-DD'),
             }
             postRole(data).then(res => {
-                console.log('res => ', res);
                 if (res.data.status === true) {
                     notification.open({
                         message: 'Success',
@@ -83,48 +78,37 @@ export default class EditRoles extends Component {
 
         return (
             <div>
-                <div className="d-flex">
-                    <SideNav />
-                    <div id="content-wrapper" className="d-flex flex-column w-100 content-relative">
-                        <div className="content">
-                            <Header />
-                        </div>
-                        <div className="container-fluid">
-                            <div className="main-title-lg mb-5 d-flex justify-content-between">
-                                <h1 className="h3 text-gray-800">Edit Trade</h1>
-                                <Link to="/trade-list" className="btn btn-orange-search">View Trades List</Link>
-                            </div>
-                            <div className="trade-form-wrap">
-                                <div className="row mt-5">
-                                    <div className="col-lg-6">
-                                        <div className="bg-white p-5 form-border">
-                                            <Form onFinish={updateRole}>
-                                                <div className="form-group">
-                                                    <label>Name</label>
-                                                    <Form.Item>
-                                                        <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
-                                                    </Form.Item>
-                                                </div>
-                                                <div className="form-group">
-                                                    <label className="formlabel">Record Status </label>
-                                                    <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
-                                                        {
-                                                            this.state.changeRecordStatusId.map(roleDetails => (
-                                                                <Select.Option value={roleDetails.id}>{roleDetails.name}</Select.Option>
-                                                            ))
-                                                        }
-                                                    </Select>
-                                                </div>
-                                                <Form.Item>
-                                                    <Button type="primary" htmlType="submit">Update Role</Button>
-                                                </Form.Item>
-                                            </Form>
+                <div className="container-fluid">
+                    <div className="main-title-lg mb-5 d-flex justify-content-between">
+                        <h1 className="h3 text-gray-800">Edit Trade</h1>
+                        <Link to="/trade-list" className="btn btn-orange-search">View Trades List</Link>
+                    </div>
+                    <div className="trade-form-wrap">
+                        <div className="row mt-5">
+                            <div className="col-lg-6">
+                                <div className="bg-white p-5 form-border">
+                                    <Form onFinish={updateRole}>
+                                        <div className="form-group">
+                                            <label>Name</label>
+                                            <Form.Item>
+                                                <Input name="Name" value={this.state.Name} onChange={(e) => this.changeHandler(e)} />
+                                            </Form.Item>
                                         </div>
-                                    </div>
+                                        <div className="form-group">
+                                            <label className="formlabel">Record Status </label>
+                                            <Select className="form-ant-control w-100 inputstyle" value={this.state.RecordStatusId} onChange={(e) => this.handleChange(e)}>
+                                                {this.state.changeRecordStatusId.map(roleDetails => (
+                                                    <Select.Option value={roleDetails.id}>{roleDetails.name}</Select.Option>
+                                                ))}
+                                            </Select>
+                                        </div>
+                                        <Form.Item>
+                                            <Button type="primary" htmlType="submit">Update Role</Button>
+                                        </Form.Item>
+                                    </Form>
                                 </div>
                             </div>
                         </div>
-                        <Footer />
                     </div>
                 </div>
             </div>
