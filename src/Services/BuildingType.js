@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 const userId = localStorage.getItem('userID') ? localStorage.getItem('userID') : '';
 
 export function getAllBuildingType(pageNumber) {
@@ -9,6 +8,12 @@ export function getAllBuildingType(pageNumber) {
         return error
     });
 }
+
+// export function getAllBuildingTypeGlobal(pageNumber) {
+//     let url = `projects/getBuildingTypes/10/${pageNumber}`;
+//     var options = GenerateOptions(url, "GET");
+//     return MakeTheApiCall(options)
+// };
 
 export function getBuildTypeById(buildingId) {
     return axios.get(`https://bimiscwebapi-test.azurewebsites.net/api/projects/getBuildingType/${buildingId}`).then(response => {

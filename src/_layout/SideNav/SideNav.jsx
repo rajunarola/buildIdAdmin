@@ -61,7 +61,7 @@ export default class SideNav extends Component {
         <li className="nav-item">
           <Link className="nav-link" to="/ticket-list" activeClassName="active">
             <i className="fas fa-fw fa-ticket-alt"></i>
-            <span>TicketTypes</span>
+            <span>Ticket Types</span>
           </Link>
         </li>
         <li className="nav-item">

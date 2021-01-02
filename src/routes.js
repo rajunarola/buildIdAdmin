@@ -58,7 +58,7 @@ export const routesCode = [
     { path: "/edit-ticket-list/:id", exact: true, component: EditTickets },
     { path: "/add-project", exact: true, component: AddProjects },
     { path: "/project-list", exact: true, component: ProjectsList },
-    { path: "/forgot-password", exact: true, component: ForgotPassword },
+    { path: "/forgot-password", exact: true, component: ForgotPassword }
 ];
 
 class Routes extends React.PureComponent {

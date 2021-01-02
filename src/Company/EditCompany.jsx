@@ -357,8 +357,8 @@ class ProductTable extends React.Component {
                   </div>
                 </div>
                 <div className="mt-3 col-md-12 d-flex mb-3">
-                  <Button type="primay" className="btn btn-orange-search" disabled={!this.state.gridEdit} onClick={this.props.onRowAdd}>Add</Button>
-                  <Button type="primay" className="btn btn-orange-search ml-3" onClick={() => this.gridEdit()}>Edit</Button>
+                  <button type="primay" className="btn btn-orange-search" disabled={!this.state.gridEdit} onClick={this.props.onRowAdd}>Add</button>
+                  <button type="primay" className="btn btn-orange-search ml-3" onClick={() => this.gridEdit()}>Edit</button>
                 </div>
 
                 {this.state.gridEdit ?
@@ -490,6 +490,11 @@ class ProductRow extends React.Component {
           value: this.props.product.Type,
           id: this.props.product.Id
         }} />
+        <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+          type: "dropdown",
+          value: this.props.product.Type,
+          id: this.props.product.Id
+        }} />
         <div className="d-none">
           <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
             type: "CreatedBy",
@@ -519,7 +524,16 @@ class EditableCell extends React.Component {
   render() {
     return (
       <td>
-        <input type='text' name={this.props.cellData.type} id={this.props.cellData.id} value={this.props.cellData.value} onChange={this.props.onProductTableUpdate} />
+        {
+          this.props.cellData.type === "dropdown" ?
+            <select>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+            </select>
+            :
+            <input type='text' name={this.props.cellData.type} id={this.props.cellData.id} value={this.props.cellData.value} onChange={this.props.onProductTableUpdate} />
+        }
       </td>
     );
   }

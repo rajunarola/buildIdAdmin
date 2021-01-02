@@ -73,6 +73,7 @@ export default class BuildingTypeList extends Component {
 
     handlePageClick = page => {
         const pageno = page.selected + 1;
+        // getAllBuildingTypeGlobal(pageno).then(resp => {
         getAllBuildingType(pageno).then(res => {
             this.setState({ buildingType: res.data.data, total: res.data.message, loading: false }, () => {
                 let pageCount = this.state.total / this.state.limit

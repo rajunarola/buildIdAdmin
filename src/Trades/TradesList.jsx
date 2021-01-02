@@ -33,7 +33,7 @@ export default class TradesList extends Component {
             sorter: (a, b) => a.name.localeCompare(b.name)
         },
         {
-            title: "RecordStatus",
+            title: "Record Status",
             dataIndex: "recordStatus",
             key: "recordStatus"
         },
