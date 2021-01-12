@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let apiUrl = `https://bimiscwebapi-test.azurewebsites.net/api/`
+let apiUrl = process.env.REACT_APP_API_URL + `api/`
 
 
 export function MakeTheApiCall(apiOptions) {

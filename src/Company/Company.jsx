@@ -77,7 +77,7 @@ export default class Company extends Component {
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
-    fetch(`https://bimiscwebapi-test.azurewebsites.net/api/projects/getBuildingTypes/10/1/${value}`).then(response => response.json()).then(body => {
+    fetch(process.env.REACT_APP_API_URL + `api/projects/getBuildingTypes/10/1/${value}`).then(response => response.json()).then(body => {
       console.log('body => ', body);
       if (fetchId !== this.lastFetchId) {
         // for fetch callback order

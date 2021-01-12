@@ -53,7 +53,6 @@ export default class BuildingTypeList extends Component {
             },
         ]
     }
-
     state = {
         buildingType: [],
         limit: 10,
