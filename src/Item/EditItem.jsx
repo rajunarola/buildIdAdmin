@@ -70,11 +70,11 @@ export default class EditItem extends Component {
 
     changeImage = (e) => {
         this.setState({ loading: true })
-        const files = Array.from(e.target.files);
+        const files = e.target.files[0];
         const formData = new FormData();
         formData.append('Id', this.state.imageId)
         formData.append('ItemId', this.state.itemId)
-        formData.append('FileUrl', files[0])
+        formData.append('FileUrl', files)
         formData.append('Main', true)
         formData.append('CreatedBy', parseInt(localStorage.getItem('userID')))
         formData.append('ModifiedBy', parseInt(localStorage.getItem('userID')))
