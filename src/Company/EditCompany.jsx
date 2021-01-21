@@ -351,7 +351,7 @@ class ProductTable extends React.Component {
                         <label className="form-check-label ml-2">Active</label>
                       </div>
                       <Form.Item>
-                        <Button type="primary" htmlType="submit" className="btn btn-orange-search">Update Company</Button>
+                        <button type="submit" className="btn btn-orange-search">Update Company</button>
                       </Form.Item>
                     </Form>
                   </div>
@@ -388,7 +388,7 @@ class ProductTable extends React.Component {
                   </div>
                 }
                 <div className="mt-3 col-md-12 d-flex">
-                  <Button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</Button>
+                  <button className="btn btn-orange-search" onClick={() => this.updateCompanyAddress()}>Save</button>
                 </div>
               </div>
             </div>

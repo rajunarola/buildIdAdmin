@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom';
-import Footer from '../_layout/Footer/Footer';
-import Header from '../_layout/Header/Header';
-import SideNav from '../_layout/SideNav/SideNav';
 import * as moment from "moment";
 import { postProject } from '../Services/ProjectAPI';
-import { notification, Form, Input, Button } from 'antd';
+import { notification, Form, Input } from 'antd';
 export default class AddProjects extends Component {
 
   render() {
@@ -23,13 +20,13 @@ export default class AddProjects extends Component {
             Id: 0,
             Name: values.projectName,
             RecordStatusId: 1,
-            CreatedBy: 1,
+            CreatedBy: parseInt(localStorage.getItem('userID')),
             Address: values.address,
             City: values.city,
             Country: values.country,
             Province: values.province,
             PostalCode: values.postalCode,
-            ModifiedBy: 1,
+            ModifiedBy: parseInt(localStorage.getItem('userID')),
             Active: 1,
             StartDate: moment(new Date()).format('YYYY-MM-DD'),
             EndDate: moment(new Date()).format('YYYY-MM-DD'),

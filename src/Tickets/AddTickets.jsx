@@ -4,50 +4,35 @@ import { postTicket } from '../Services/TicketAPI';
 import { notification, Form, Input } from 'antd';
 export default class AddTickets extends Component {
 
-  state = {
-    Id: 0,
-    Name: '',
-    RecordStatusId: 1,
-    CreatedBy: 1,
-    ModifiedBy: 1
-  }
-
-  changeHandler = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
-  }
-
-  handleChange = (event) => {
-    this.setState({ RecordStatusId: event })
-  }
-
   render() {
 
     const formRef = React.createRef();
 
-    const onFinishFailed = errorInfo => {
-      console.log('Failed:', errorInfo);
-    }
+    const onFinishFailed = () => { }
 
     const sendTicketData = values => {
       const data = {
         Content: [
           {
-            Id: this.state.Id,
+            Id: 0,
             Name: values.ticketName,
-            RecordStatusId: this.state.RecordStatusId,
-            CreatedBy: 1,
-            ModifiedBy: 1
+            RecordStatusId: 1,
+            CreatedBy: parseInt(localStorage.getItem('userID')),
+            ModifiedBy: parseInt(localStorage.getItem('userID'))
           }
         ]
       }
       postTicket({ Content: JSON.stringify(data.Content) }).then(res => {
-        if (res.data.status === true) {
+        if (res.data.message === "OK") {
           formRef.current.resetFields();
           notification.success({
             message: 'Success',
             description: 'Ticket has been successfully added!'
+          });
+        } else if (res.data.message !== "OK") {
+          notification.info({
+            message: 'Error',
+            description: 'A record with the name already exists in database. The save for this record will not be finalized!'
           });
         }
       }).catch(err => {
@@ -74,7 +59,7 @@ export default class AddTickets extends Component {
                     <div className="form-group">
                       <label>Ticket Name</label>
                       <Form.Item name="ticketName" rules={[{ required: true, message: 'Please enter Ticket Name!' }]}>
-                        <Input onChange={(event) => this.changeHandler(event)} />
+                        <Input />
                       </Form.Item>
                     </div>
                     <div className="mt-4">

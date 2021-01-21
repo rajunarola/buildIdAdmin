@@ -14,17 +14,22 @@ export default class AddRoles extends Component {
         Id: 0,
         Name: values.Name,
         RecordStatusId: 1,
-        CreatedBy: 1,
-        ModifiedBy: 1,
+        CreatedBy: parseInt(localStorage.getItem('userID')),
+        ModifiedBy: parseInt(localStorage.getItem('userID')),
         DateCreated: moment(new Date()).format('YYYY-MM-DD'),
         DateModified: moment(new Date()).format('YYYY-MM-DD')
       }
       postRole(data).then(res => {
-        if (res.data.status === true) {
+        if (res.data.message === "OK") {
           formRef.current.resetFields();
           notification.success({
             message: 'Success',
             description: 'Role has been successfully added!'
+          });
+        } else if (res.data.message !== "OK") {
+          notification.info({
+            message: 'Error',
+            description: 'A record with the name already exists in database. The save for this record will not be finalized!'
           });
         }
       }).catch(err => {
@@ -36,7 +41,7 @@ export default class AddRoles extends Component {
     }
 
     return (
-      <div>
+      <>
         <div className="container-fluid">
           <div className="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
             <h1 className="h3 mb-0 text-gray-800">Add Roles</h1>
@@ -62,7 +67,7 @@ export default class AddRoles extends Component {
             </div>
           </div>
         </div>
-      </div>
+      </>
     )
   }
 }

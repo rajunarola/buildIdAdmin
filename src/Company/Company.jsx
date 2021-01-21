@@ -18,25 +18,10 @@ export default class Company extends Component {
     data: [],
     fetching: false,
     value: [],
-    Id: 0,
-    Name: '',
-    RecordStatusId: 1,
-    CreatedBy: 1,
-    ModifiedBy: 1,
-    QbId: 2,
-    WebSite: '',
-    Phone: '',
-    IndustryId: 2,
     Active: false,
     storeCompanyId: '',
     industryId: ''
   }
-
-  changeHandler = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
-  };
 
   getCheckBoxValue = (e) => {
     this.setState({ Active: e });
@@ -71,14 +56,11 @@ export default class Company extends Component {
     });
   }
 
-
   fetchIndustry = value => {
-    console.log('value => ', value);
     this.lastFetchId += 1;
     const fetchId = this.lastFetchId;
     this.setState({ data: [], fetching: true });
     fetch(process.env.REACT_APP_API_URL + `api/projects/getBuildingTypes/10/1/${value}`).then(response => response.json()).then(body => {
-      console.log('body => ', body);
       if (fetchId !== this.lastFetchId) {
         // for fetch callback order
         return;
@@ -111,7 +93,7 @@ export default class Company extends Component {
         RecordStatusId: 1,
         CreatedBy: parseInt(localStorage.getItem('userID')),
         ModifiedBy: parseInt(localStorage.getItem('userID')),
-        QbId: this.state.QbId,
+        QbId: 2,
         WebSite: value.email,
         Phone: value.PhoneNo,
         IndustryId: this.state.industryId,
@@ -136,7 +118,7 @@ export default class Company extends Component {
     }
 
     return (
-      <div>
+      <>
         <div className="container-fluid">
           <div className="d-sm-flex align-items-center justify-content-between mb-4 main-title-lg">
             <h1 className="h3 mb-0 text-gray-800">Add Company</h1>
@@ -149,23 +131,21 @@ export default class Company extends Component {
                   <div className="bg-white p-5 form-border">
                     <div className="form-group">
                       <label for="CompanyName">Company Name</label>
-                      <Form.Item name="Name" rules={[{
-                        required: true, message: "Please enter your Company Name!"
-                      }]}>
-                        <Input value={this.state.Name} onChange={(event) => this.changeHandler(event)} />
+                      <Form.Item name="Name" rules={[{ required: true, message: "Please enter your Company Name!" }]}>
+                        <Input />
                       </Form.Item>
                     </div>
                     <div className="form-group">
                       <label for="WebsiteName">Website</label>
                       <Form.Item name="email" rules={[{ type: "email", message: "The input is not valid E-mail!" },
                       { required: true, message: "Please enter your email" }]}>
-                        <Input value={this.state.WebSite} onChange={(event) => this.changeHandler(event)} />
+                        <Input />
                       </Form.Item>
                     </div>
                     <div className="form-group">
                       <label for="PhoneNo">Phone No</label>
                       <Form.Item name="PhoneNo" rules={[{ required: true, message: "Please input your phone number!" }]}>
-                        <Input onChange={(event) => this.changeHandler(event)} />
+                        <Input />
                       </Form.Item>
                     </div>
                     <div className="form-group mb-4">
@@ -175,7 +155,6 @@ export default class Company extends Component {
                           className="w-100"
                           showSearch
                           labelInValue
-                          // value={industryValue}
                           placeholder="Search Industries"
                           notFoundContent={fetching ? <Spin size="small" /> : null}
                           filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -204,7 +183,7 @@ export default class Company extends Component {
                                       <label className="formlabel">Address </label>
                                       <Form.Item name={[field.name, 'Address']}
                                         fieldKey={[field.fieldKey, 'Address']}>
-                                        <Input onChange={(e) => this.changeHandler(e)} />
+                                        <Input />
                                       </Form.Item>
                                     </div>
                                     <div className="form-group">
@@ -212,42 +191,42 @@ export default class Company extends Component {
                                       <Form.Item
                                         name={[field.name, 'Type']}
                                         fieldKey={[field.fieldKey, 'Type']}>
-                                        <Input onChange={(e) => this.changeHandler(e)} />
+                                        <Input />
                                       </Form.Item>
                                     </div>
                                     <div className="form-group">
                                       <label className="formlabel">City {i + 1} </label>
                                       <Form.Item name={[field.name, 'City']}
                                         fieldKey={[field.fieldKey, 'City']}>
-                                        <Input onChange={(e) => this.changeHandler(e)} />
+                                        <Input />
                                       </Form.Item>
                                     </div>
                                     <div className="form-group">
                                       <label className="formlabel">Province {i + 1}</label>
                                       <Form.Item name={[field.name, 'Province']}
                                         fieldKey={[field.fieldKey, 'Province']}>
-                                        <Input onChange={(event) => this.changeHandler(event)} />
+                                        <Input />
                                       </Form.Item>
                                     </div>
                                     <div className="form-group">
                                       <label className="formlabel">Postal Code {i + 1}</label>
                                       <Form.Item name={[field.name, 'PostalCode']}
                                         fieldKey={[field.fieldKey, 'PostalCode']}>
-                                        <Input onChange={(event) => this.changeHandler(event)} />
+                                        <Input />
                                       </Form.Item>
                                     </div>
                                     <div className="form-group">
                                       <label className="formlabel">Country {i + 1}</label>
                                       <Form.Item name={[field.name, 'Country']}
                                         fieldKey={[field.fieldKey, 'Country']}>
-                                        <Input onChange={(event) => this.changeHandler(event)} />
+                                        <Input />
                                       </Form.Item>
                                     </div>
                                     <div className="form-group">
                                       <label className="formlabel">Contact Person {i + 1}</label>
                                       <Form.Item name={[field.name, 'ContactPerson']}
                                         fieldKey={[field.fieldKey, 'ContactPerson']}>
-                                        <Input onChange={(event) => this.changeHandler(event)} />
+                                        <Input />
                                       </Form.Item>
                                     </div>
                                     <div className="formfieldremove">
@@ -277,7 +256,7 @@ export default class Company extends Component {
             </Form>
           </div>
         </div>
-      </div >
+      </>
     )
   }
 }
